@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {  handleAuthFailController, handleAuthSuccessController, loginController, logoutController, refreshTokenController, registerController, requestLoginVerificationController, resetPasswordController, verifyUserController } from "../controllers/auth.controller";
+import {  handleAuthFailController, handleAuthSuccessController, loginController, logoutController, refreshTokenController, registerController, resetPasswordController, verifyUserController } from "../controllers/auth.controller";
 import passport from "../services/auth20.service";
 
 export const authRouter = Router();
@@ -11,8 +11,6 @@ authRouter.post('/register', registerController);
 authRouter.post('/email-verification', verifyUserController);
 
 authRouter.post('/refresh', refreshTokenController);
-
-authRouter.post('/login-verification', requestLoginVerificationController);
 
 authRouter.post('/logout', logoutController);
 

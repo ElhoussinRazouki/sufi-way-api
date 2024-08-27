@@ -33,13 +33,15 @@ export const registerUser = async (userName: string, email: string, password: st
     }
     const hashedPassword = await hashPassword(password);
     try {
+        
+        const code = generateVerificationCode();
         await Users.create({
             userName,
             email,
             password: hashedPassword,
             ipRegisteredWith: ipAddress,
+            verificationCode: code
         })
-        const code = generateVerificationCode("email verification", email);
         sendVerificationEmail(email, "Welcome to Sufi Tariqa! Verify your email address", code);
         console.log('🎉 user registered successfully');
     } catch (error: any) {
@@ -62,56 +64,40 @@ export const loginUser = async (email: string, password: string, ipAddress?: str
         throw new Error('invalid credentials');
     }
     if (!usersDb.isVerified) {
-        const code = generateVerificationCode("email verification", email);
+        const code = generateVerificationCode();
+        await Users.updateOne({ email }, { $set: { verificationCode: code, updated_at: new Date() } });
         await sendVerificationEmail(email, "Verification code for your Sufi Tariqa account", code);
         throw new Error('email not verified, verification code sent to your email');
     }
     const accessToken = await generateTokenForUser(usersDb);
     const refreshToken = await generateRefreshTokenForUser(usersDb.id);
-    await Users.updateOne({ email }, { $set: { updated_at: new Date() } });
+    await Users.updateOne({ email }, { $set: { accessToken, refreshToken, updated_at: new Date() } });
     return { accessToken, refreshToken };
-}
-
-export const requestLoginVerification = async (email: string, password: string, byEmail: boolean = true, bySms: boolean = false) => {
-    console.log(`Requesting login verification for user with email: ${email}`);
-    const usersDb = await Users.findOne({ email }).select('password isVerified devices phoneNumber is2faActive');
-    if (!usersDb) {
-        throw new Error('invalid credentials');
-    }
-    const isPasswordValid = await comparePassword(password, usersDb.password || '');
-    if (!isPasswordValid) {
-        throw new Error('invalid credentials');
-    }
-    if (checkIfWeJustSentVerificationCode(email, 5)) throw new Error('try later');
-    const code = generateVerificationCode("device verification", email);
-    sendVerificationEmail(email, "Verification code for your sufi Tariqa account", code);
-    return;
 }
 
 
 
 export const verifyUserEmail = async (email: string, code: number) => {
-    if (validateCodeVerification("email verification", email, code)) {
-        await Users.updateOne({ email }, { $set: { isVerified: true, updated_at: new Date() } });
-        return;
+    const user = await Users.findOne({ email }).select('isVerified verificationCode');
+    if (!user) {
+        throw new Error('invalid email');
+    }
+    if (user.isVerified) {
+        throw new Error('email already verified');
+    }
+    if (user.verificationCode === code) {
+        return await Users.updateOne({ email }, { $set: { isVerified: true, updated_at: new Date() } });
     }
     throw new Error('invalid verification code');
 }
 
-export const validateCodeVerification = (type: VerificationType, email: string, code: number) => {
-    const dbCode = verificationStorage.get(email);
-    if (dbCode?.code === code && dbCode?.type === type && (dbCode.date.getTime() + 15 * 60 * 1000) > new Date().getTime()) {
-        verificationStorage.delete(email);
-        return true;
-    }
-    return false;
-}
+
 
 export const refreshToken = async (refreshToken: string, ipAddress: string) => {
     if (!refreshToken) {
         throw new Error('refresh token is required');
     }
-    const user = await Users.findOne({ devices: { $elemMatch: { refreshToken } } }).select('_id devices isVerified devices email userName avatar plan');
+    const user = await Users.findOne({ refreshToken }).select('_id isVerified email userName avatar plan');
     if (!user) {
         throw new Error('invalid tokens');
     }
@@ -121,7 +107,7 @@ export const refreshToken = async (refreshToken: string, ipAddress: string) => {
     const newAccessToken = await generateTokenForUser(user);
     const newRefreshToken = await _refreshToken(refreshToken, environment.REFRESH_TOKEN_LIFE || "30d");
     try {
-        await Users.updateOne({ devices: { $elemMatch: { refreshToken } } }, { $set: { "devices.$.accessToken": newAccessToken, "devices.$.refreshToken": newRefreshToken, "devices.$.ipAddress": ipAddress, "devices.$.updated_at": new Date(), updated_at: new Date() } })
+        await Users.updateOne({ refreshToken   }, { $set: { accessToken: newAccessToken, refreshToken: newRefreshToken, updated_at: new Date() } })
     } catch (error: any) {
         console.error('🚨 error while updating tokens ' + error.message);
         throw new Error('error while updating tokens');
@@ -151,12 +137,12 @@ export const logout = async (accessToken: string, refreshToken: string) => {
     if (!accessToken || !refreshToken) {
         throw new Error('both tokens are required');
     }
-    const user = await Users.findOne({ devices: { $elemMatch: { accessToken, refreshToken } } }).select('devices');
+    const user = await Users.findOne({ accessToken, refreshToken }).select('id');
     if (!user) {
         throw new Error('invalid tokens');
     }
     try {
-        await Users.updateOne({ devices: { $elemMatch: { accessToken, refreshToken } } }, { $pull: { devices: { accessToken, refreshToken } }, $set : { updated_at: new Date() } })
+        await Users.updateOne({ accessToken, refreshToken }, { $set : { accessToken: null, refreshToken: null, updated_at: new Date() } })
     } catch (error: any) {
         console.error('🚨 error while revoking device ' + error.message);
         throw new Error('error while revoking device');
@@ -167,7 +153,7 @@ export const logout = async (accessToken: string, refreshToken: string) => {
 
 // auth 2.0
 export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: string) => {
-    let userDb = await Users.findOne({ email: profile.emails[0].value }).select('googleId email userName avatar plan devices');
+    let userDb = await Users.findOne({ email: profile.emails[0].value }).select('googleId email userName avatar plan');
     let message = undefined;
     if (!userDb) {
         userDb = await Users.create({
@@ -186,7 +172,7 @@ export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: s
 
     const accessToken = await generateTokenForUser(userDb);
     const refreshToken = await generateRefreshTokenForUser(userDb?.id);
-    await Users.updateOne({ email: userDb?.email }, { $set: { googleId: profile.id || userDb.googleId, avatar: profile.photos[0].value || userDb.avatar, isVerified: true, updated_at: new Date() }, $push: { devices: { accessToken, refreshToken, ipAddress, userAgent } } });
+    await Users.updateOne({ email: userDb?.email }, { $set: { googleId: profile.id || userDb.googleId, avatar: profile.photos[0].value || userDb.avatar, accessToken, refreshToken, isVerified: true, updated_at: new Date() } });
     return { message, accessToken, refreshToken };
 }
 
@@ -228,30 +214,9 @@ const generateRefreshTokenForUser = async (userId: string) => {
     return await _generateToken({ userId }, environment.REFRESH_TOKEN_LIFE || "30d");
 }
 
-const generateVerificationCode = (type: VerificationType, email: string, ipAddress?: string) => {
+const generateVerificationCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000);
-    verificationStorage.set(email, { code, type, date: new Date(), ipAddress });
     return code;
-}
-
-const checkIfWeJustSentVerificationCode = (email: string, howMuchSecondes: number) => {
-    const dbCode = verificationStorage.get(email);
-    const now = new Date();
-    now.setSeconds(now.getSeconds() - howMuchSecondes);
-    if (dbCode && dbCode.date > now) {
-        return true;
-    }
-    return false;
-}
-
-const checkIfWeJustSendResetPasswordCode = (email: string, howMuchSecondes: number) => {
-    const dbCode = verificationStorage.get(email);
-    const now = new Date();
-    now.setSeconds(now.getSeconds() - howMuchSecondes);
-    if (dbCode && dbCode.date > now) {
-        return true;
-    }
-    return false;
 }
 
 

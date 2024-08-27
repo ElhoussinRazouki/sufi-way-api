@@ -1,13 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { googleAuth, loginUser, logout, refreshToken, registerUser, requestLoginVerification, resetPassword, verifyUserEmail } from "../services/auth.service";
+import { googleAuth, loginUser, logout, refreshToken, registerUser, resetPassword, verifyUserEmail } from "../services/auth.service";
 
 
 
 export const registerController = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'missing fields' });
+    }
     const ipAddress = req.headers['x-forwarded-for'] as string;
     registerUser(username, email, password, ipAddress).then((value) => {
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: "User registered successfully. A verification email has been sent." });
     }).catch((error) => {
         res.status(500).json({ message: error.message });
     })
@@ -32,25 +35,6 @@ export const loginController = async (req: Request, res: Response) => {
 
 
 
-export const requestLoginVerificationController = async (req: Request, res: Response) => {
-    const { email, password, bySms } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ message: 'missing fields' });
-    }
-    if(!bySms){
-        requestLoginVerification(email, password).then(() => {
-            res.status(200).json({ message: 'verification code sent successfully' });
-        }).catch((error) => {
-            res.status(400).json({ message: error.message });
-        })
-    }else{
-        requestLoginVerification(email, password, false, true).then(() => {
-            res.status(200).json({ message: 'verification code sent successfully' });
-        }).catch((error) => {
-            res.status(400).json({ message: error.message });
-        })
-    }
-}
 
 export const verifyUserController = async (req: Request, res: Response) => {
     const { email, code } = req.body;
