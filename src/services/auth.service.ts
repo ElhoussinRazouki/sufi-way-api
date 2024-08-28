@@ -42,7 +42,7 @@ export const registerUser = async (userName: string, email: string, password: st
             ipRegisteredWith: ipAddress,
             verificationCode: code
         })
-        sendVerificationEmail(email, "Welcome to Sufi Tariqa! Verify your email address", code);
+        sendVerificationEmail(email, "Welcome to our Application! Verify your email address", code);
         console.log('🎉 user registered successfully');
     } catch (error: any) {
         console.error('🚨 error while creating user ' + error.message);
@@ -66,7 +66,7 @@ export const loginUser = async (email: string, password: string, ipAddress?: str
     if (!usersDb.isVerified) {
         const code = generateVerificationCode();
         await Users.updateOne({ email }, { $set: { verificationCode: code, updated_at: new Date() } });
-        await sendVerificationEmail(email, "Verification code for your Sufi Tariqa account", code);
+        await sendVerificationEmail(email, "Verification code for your account", code);
         throw new Error('email not verified, verification code sent to your email');
     }
     const accessToken = await generateTokenForUser(usersDb);
@@ -83,7 +83,7 @@ export const verifyUserEmail = async (email: string, code: number) => {
         throw new Error('invalid email');
     }
     if (user.isVerified) {
-        throw new Error('email already verified');
+        throw new Error('verification failed');
     }
     if (user.verificationCode === code) {
         return await Users.updateOne({ email }, { $set: { isVerified: true, updated_at: new Date() } });

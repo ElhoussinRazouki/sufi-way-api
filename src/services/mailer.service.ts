@@ -29,79 +29,105 @@ const sendEmail = async (email: string, subject: string, text?: string, html?: s
     }
 }
 
-const EmailVerificationCodeTemplate =(otp: number)=> `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Email Address</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            text-align: center;
-            padding: 20px 0;
-        }
-        .logo {
-            display: block;
-            margin: 0 auto;
-            width: 150px;
-            height: auto;
-        }
-        .content {
-            padding: 20px;
-        }
-        p {
-            line-height: 1.5;
-        }
-        .code {
-            font-weight: bold;
-            font-size: 18px;
-            background-color: #eee;
-            padding: 5px 10px;
-            border-radius: 3px;
-            display: inline-block;
-        }
-        .footer {
-            text-align: center;
-            padding: 10px;
-            font-size: 0.8em;
-            color: #aaa;
-        }
-    </style>
-    </head>
-    <body>
-    <div class="container">
-        <div class="header">
-        </div>
-        <div class="content">
-        <p>Thank you for using our service!</p>
-        <p>
-            <span class="code">${otp}</span>
-        </p>
-        <p>this is your verification code.</p>
-        </div>
-        <div class="footer">
-        <p>If you have any problems, please don't hesitate to contact us at dev.sufi@gmail.com.</p>
-        <p>Sincerely,</p>
-        <p>X Team</p>
-        </div>
-    </div>
-    </body>
-    </html>`
+const EmailVerificationCodeTemplate =(otp: number)=> `<!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Email Verification</title>
+                        <style>
+                            body {
+                                font-family: 'Helvetica Neue', Arial, sans-serif;
+                                background-color: #f0f2f5;
+                                color: #333;
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 40px 20px;
+                                background-color: #ffffff;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                            }
+                            .header {
+                                text-align: center;
+                                padding-bottom: 20px;
+                                border-bottom: 1px solid #e6e6e6;
+                            }
+                            .header img {
+                                width: 120px;
+                            }
+                            .title {
+                                font-size: 28px;
+                                font-weight: 600;
+                                margin-top: 20px;
+                                color: #222;
+                            }
+                            .content {
+                                text-align: center;
+                                padding: 30px;
+                            }
+                            .content p {
+                                font-size: 16px;
+                                color: #555;
+                                margin: 0;
+                                display: flex;
+                                justify-content: center;
+                                margin-bottom:5px;
+                                text-align: center;
+                            }
+                            .code {
+                                font-size: 36px;
+                                font-weight: bold;
+                                color: #4CAF50;
+                                margin: 20px 0;
+                                letter-spacing: 4px;
+                            }
+                            .button {
+                                display: inline-block;
+                                padding: 12px 24px;
+                                background-color: #4CAF50;
+                                color: #fff;
+                                text-decoration: none;
+                                border-radius: 4px;
+                                font-size: 16px;
+                                font-weight: 500;
+                                transition: background-color 0.3s ease;
+                            }
+                            .button:hover {
+                                background-color: #43a047;
+                            }
+                            .footer {
+                                text-align: center;
+                                padding-top: 20px;
+                                border-top: 1px solid #e6e6e6;
+                                margin-top: 20px;
+                                font-size: 12px;
+                                color: #999;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <h2 class="title">Verify Your Email</h2>
+                            </div>
+                            <div class="content">
+                                <p>Please use the verification code below to verify your email address:</p>
+                                <p class="code">${otp}</p>
+                            </div>
+                            <div class="footer">
+                                <p>If you did not request this, you can safely ignore this email.</p>
+                                <p>Need help? Contact us at <a href="mailto:support@example.com">support@example.com</a>.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+
+
+`
 
 const EmailNotificationTemplate =(message: string)=> `
     <!DOCTYPE html>
