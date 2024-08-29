@@ -1,28 +1,22 @@
 import { Users } from "../models/user.schema";
+import { RegisterSchema } from "../types/auth.types";
 import { comparePassword, hashPassword } from "../utils/hashing";
 import { _generateToken, _isTokenExpired, _refreshToken } from "../utils/jwt";
 import { environment } from "../utils/loadEnvironment";
 import { verifyPasswordStrength } from "../utils/string.format";
-import { sendVerificationEmail } from "./mailer.service";
-import validate from 'deep-email-validator'
+import { sendPasswordResetEmail, sendVerificationEmail } from "./mailer.service";
 
 
-const verificationStorage = new Map<string, { code: number, type: VerificationType, date: Date, ipAddress?: string }>();
 const MAX_LOGIN_ATTEMPTS = 3;
-const RESET_INTERVAL_MINUTES = 0.5;
+const RESET_INTERVAL_MINUTES = 10;
 
 
-export const registerUser = async (userName: string, email: string, password: string, ipAddress: string, userAgent?: string) => {
+export const registerUser = async (username: string, email: string, password: string) => {
 
-    if (!email || !password || !userName) {
-        throw new Error('missing fields');
-    }
-    const validationResult = await validate(email);
-    if (!validationResult.valid) throw new Error('Invalid email address: ' + validationResult.reason);
-    if (!verifyPasswordStrength(password)) throw new Error("try a stronger password with at least 8 characters, one uppercase, one lowercase, one number and one special character")
+    await RegisterSchema.validate({ username, email, password })
 
     console.log(`Registering user with email: ${email} and password: ${password}`);
-    const userNameExists = await Users.findOne({ userName: userName }).select('_id');
+    const userNameExists = await Users.findOne({ userName: username }).select('_id');
 
     if (userNameExists) {
         throw new Error('the user name already exists');
@@ -36,10 +30,9 @@ export const registerUser = async (userName: string, email: string, password: st
         
         const code = generateVerificationCode();
         await Users.create({
-            userName,
+            userName: username,
             email,
             password: hashedPassword,
-            ipRegisteredWith: ipAddress,
             verificationCode: code
         })
         sendVerificationEmail(email, "Welcome to our Application! Verify your email address", code);
@@ -51,11 +44,14 @@ export const registerUser = async (userName: string, email: string, password: st
 
 }
 
-export const loginUser = async (email: string, password: string, ipAddress?: string, userAgent?: string) => {
+export const loginUser = async (email: string, password: string) => {
     console.log(`Logging in user with email: ${email}`);
-    const usersDb = await Users.findOne({ email }).select('password isVerified devices email userName avatar plan loginAttempts stripe');
+    const usersDb = await Users.findOne({ email }).select('password isVerified email userName avatar plan loginAttempts');
     if (!usersDb) {
         throw new Error('invalid credentials');
+    }
+    if(usersDb.loginAttempts.attempts as number >= MAX_LOGIN_ATTEMPTS && new Date().getTime() - (usersDb.loginAttempts?.lastAttemptAt as Date).getTime() < RESET_INTERVAL_MINUTES * 60 * 1000){
+        throw new Error('you reach maximum attempts, try again later');
     }
     const isPasswordValid = await comparePassword(password, usersDb.password || '');
 
@@ -67,7 +63,7 @@ export const loginUser = async (email: string, password: string, ipAddress?: str
         const code = generateVerificationCode();
         await Users.updateOne({ email }, { $set: { verificationCode: code, updated_at: new Date() } });
         await sendVerificationEmail(email, "Verification code for your account", code);
-        throw new Error('email not verified, verification code sent to your email');
+        throw new Error('email not verified, a verification code sent to your email');
     }
     const accessToken = await generateTokenForUser(usersDb);
     const refreshToken = await generateRefreshTokenForUser(usersDb.id);
@@ -116,9 +112,15 @@ export const refreshToken = async (refreshToken: string, ipAddress: string) => {
 }
 
 
-export const resetPassword = async (email: string, newPassword: string) => {
-    console.log(`Resetting password for email: ${email}`);
+export const resetPassword = async (email: string, code: number,  newPassword: string) => {
    
+    const userDb = await Users.findOne({ email }).select('verificationCode');
+    if (!userDb) {
+        throw new Error('invalid email');
+    }
+    if (userDb.verificationCode !== code) {
+        throw new Error('invalid verification code');
+    }
     if (!verifyPasswordStrength(newPassword)) {
         throw new Error('try a stronger password with at least 8 characters, one uppercase, one lowercase, one number and one special character');
     }
@@ -132,6 +134,15 @@ export const resetPassword = async (email: string, newPassword: string) => {
     }
     return;
 }
+
+export const requestResetPassword = async (email: string)=>{
+    
+    const code = generateVerificationCode();
+    await Users.updateOne({ email }, { $set: { verificationCode: code, updated_at: new Date() } }).then(()=>{
+        sendPasswordResetEmail(email, code);
+    })
+}
+
 
 export const logout = async (accessToken: string, refreshToken: string) => {
     if (!accessToken || !refreshToken) {

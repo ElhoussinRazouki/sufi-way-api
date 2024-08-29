@@ -12,15 +12,20 @@ const UserSchema = new Schema({
         default: false
     },
     verificationCode: Number,
-    is2faActive: {
-        type: Boolean,
-        default: false
-    },
     accessToken: String,
     refreshToken: String,
     avatar: String,
     googleId: String,
-    ipRegisteredWith: String,
+    loginAttempts: {
+        type: {
+            attempts: Number,
+            lastAttemptAt: Date
+        },
+        default: {
+            attempts: 0,
+            lastAttemptAt: Date.now()
+        }
+    },
     plan: {
         type: String,
         default: "free"
@@ -39,6 +44,7 @@ const UserSchema = new Schema({
             lastAttemptAt: null
         }
     },
+    isAdmin: { type: Boolean, default: false },
     removed_at: Date,
     created_at: { type: Date, default: Date.now},
     updated_at: { type: Date, default: Date.now}
