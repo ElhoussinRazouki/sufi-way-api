@@ -49,8 +49,7 @@ export const refreshTokenController = (req: Request, res: Response) => {
     if (!refresh_token) {
         return res.status(401).json({ message: 'refresh token is required.' });
     }
-    const ipAddress = req.ip;
-    refreshToken(refresh_token, ipAddress as string).then((newTokens: any) => {
+    refreshToken(refresh_token).then((newTokens: any) => {
         res.status(200).json(newTokens);
     }).catch((error: any) => {
         res.status(400).json({ message: error.message });

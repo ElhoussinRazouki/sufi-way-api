@@ -89,13 +89,13 @@ export const verifyUserEmail = async (email: string, code: number) => {
 
 
 
-export const refreshToken = async (refreshToken: string, ipAddress: string) => {
+export const refreshToken = async (refreshToken: string) => {
     if (!refreshToken) {
         throw new Error('refresh token is required');
     }
     const user = await Users.findOne({ refreshToken }).select('_id isVerified email userName avatar plan');
     if (!user) {
-        throw new Error('invalid tokens');
+        throw new Error('invalid token');
     }
     if (await _isTokenExpired(refreshToken)) {
         throw new Error('refresh token expired');

@@ -50,5 +50,9 @@ const UserSchema = new Schema({
     updated_at: { type: Date, default: Date.now}
 });
 
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ userName: 1 }, { unique: true });
+UserSchema.index({ refreshToken: 1 }, { unique: true });
+
 
 export const Users = model('User', UserSchema);

@@ -10,7 +10,7 @@ authRouter.post('/register', registerController);
 
 authRouter.post('/email-verification', verifyUserController);
 
-authRouter.post('/refresh', refreshTokenController);
+authRouter.post('/refresh-token', refreshTokenController);
 
 authRouter.post('/logout', logoutController);
 
