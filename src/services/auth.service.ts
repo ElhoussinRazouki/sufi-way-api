@@ -72,9 +72,8 @@ export const loginUser = async (email: string, password: string) => {
 }
 
 
-
 export const verifyUserEmail = async (email: string, code: number) => {
-    const user = await Users.findOne({ email }).select('isVerified verificationCode');
+    const user = await Users.findOne({ email }).select('isVerified verificationCode email userName avatar plan');
     if (!user) {
         throw new Error('invalid email');
     }
@@ -82,11 +81,13 @@ export const verifyUserEmail = async (email: string, code: number) => {
         throw new Error('verification failed');
     }
     if (user.verificationCode === code) {
-        return await Users.updateOne({ email }, { $set: { isVerified: true, updated_at: new Date() } });
+        const accessToken = await generateTokenForUser({...user, isVerified: true});
+        const refreshToken = await generateRefreshTokenForUser(user.id);
+        await Users.updateOne({ email }, { $set: { isVerified: true, accessToken, refreshToken, updated_at: new Date() } });
+        return { accessToken, refreshToken };
     }
     throw new Error('invalid verification code');
 }
-
 
 
 export const refreshToken = async (refreshToken: string) => {
@@ -114,11 +115,17 @@ export const refreshToken = async (refreshToken: string) => {
 
 export const resetPassword = async (email: string, code: number,  newPassword: string) => {
    
-    const userDb = await Users.findOne({ email }).select('verificationCode');
+    const userDb = await Users.findOne({ email }).select('isVerified email userName avatar plan verificationCode');
     if (!userDb) {
         throw new Error('invalid email');
     }
-    if (userDb.verificationCode !== code) {
+    if(!userDb.isVerified){
+        throw new Error('email not verified');
+    }
+    if(!userDb.verificationCode){
+        throw new Error('the verification code is expired. request a new one');
+    }
+    if ( userDb.verificationCode !== code) {
         throw new Error('invalid verification code');
     }
     if (!verifyPasswordStrength(newPassword)) {
@@ -127,13 +134,34 @@ export const resetPassword = async (email: string, code: number,  newPassword: s
     const hashedPassword = await hashPassword(newPassword);
     try {
         console.log('🔐 updating password : ');
-        await Users.updateOne({ email }, { $set: { password: hashedPassword, updated_at: new Date() } });
+        await Users.updateOne({ email }, { $set: { password: hashedPassword, verificationCode: null, updated_at: new Date() } });
     } catch (error: any) {
         console.error('🚨 error while updating password ' + error.message);
         throw new Error('error while updating password');
     }
+    
+    const accessToken = await generateTokenForUser(userDb);
+    const refreshToken = await generateRefreshTokenForUser(userDb.id);
+    await Users.updateOne({ email }, { $set: { accessToken, refreshToken, updated_at: new Date() } });
+    return { accessToken, refreshToken };
+}
+
+
+export const verifyResetPasswordCode = async (email: string, code: number) => {
+    const userDb = await Users.findOne({ email }).select('isVerified verificationCode');
+    if (!userDb) {
+        throw new Error('invalid email');
+    }
+    if (!userDb.isVerified) {
+        throw new Error('email not verified');
+    }
+
+    if (userDb.verificationCode !== code) {
+        throw new Error('invalid verification code');
+    }
     return;
 }
+
 
 export const requestResetPassword = async (email: string)=>{
     

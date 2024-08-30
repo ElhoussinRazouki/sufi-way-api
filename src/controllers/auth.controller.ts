@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { googleAuth, loginUser, logout, refreshToken, registerUser, requestResetPassword, resetPassword, verifyUserEmail } from "../services/auth.service";
+import { googleAuth, loginUser, logout, refreshToken, registerUser, requestResetPassword, resetPassword, verifyResetPasswordCode, verifyUserEmail } from "../services/auth.service";
 
 
 
@@ -21,24 +21,20 @@ export const loginController = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'missing fields' });
     }
     loginUser(email, password).then((newTokens: any) => {
-        res.status(200).json(newTokens);
+        res.status(200).json({ message: "user logged successfully", data: newTokens });
     }).catch((error) => {
         res.status(401).json({ message: error.message });
     })
 
 }
 
-
-
-
-
 export const verifyUserController = async (req: Request, res: Response) => {
     const { email, code } = req.body;
     if (!email || !code) {
         return res.status(400).json({ message: 'missing fields' });
     }
-    await verifyUserEmail(email, code).then(() => {
-        res.status(200).json({ message: 'email verified successfully' });
+    await verifyUserEmail(email, code).then((tokens) => {
+        res.status(200).json({ message: 'email verified successfully', data: tokens });
     }).catch((error) => {
         res.status(400).json({ message: error.message });
     })
@@ -50,7 +46,7 @@ export const refreshTokenController = (req: Request, res: Response) => {
         return res.status(401).json({ message: 'refresh token is required.' });
     }
     refreshToken(refresh_token).then((newTokens: any) => {
-        res.status(200).json(newTokens);
+        res.status(200).json({ message: 'tokens refreshed successfully', data: newTokens });
     }).catch((error: any) => {
         res.status(400).json({ message: error.message });
     })
@@ -71,16 +67,23 @@ export const logoutController = (req: Request, res: Response) => {
 
 export const resetPasswordController = (req: Request, res: Response) => {
     const { email, password, code } = req.body;
-    if(email && password && code) {
-        return resetPassword(email, code, password).then(() => {
-            res.status(200).json({ message: 'password reset successfully' });
+    if (email && password && code) {
+        return resetPassword(email, code, password).then((newTokens) => {
+            res.status(200).json({ message: 'password reset successfully', data: newTokens });
         }).catch((error: any) => {
             res.status(400).json({ message: error.message });
         })
     }
-    if(email && !code && !password) {
+    if (email && !code && !password) {
         return requestResetPassword(email).then(() => {
             res.status(200).json({ message: 'reset password email sent' });
+        }).catch((error: any) => {
+            res.status(400).json({ message: error.message });
+        })
+    }
+    if (email && code && !password) {
+        return verifyResetPasswordCode(email, code).then(() => {
+            res.status(200).json({ message: 'code verified successfully' });
         }).catch((error: any) => {
             res.status(400).json({ message: error.message });
         })
@@ -88,18 +91,18 @@ export const resetPasswordController = (req: Request, res: Response) => {
     return res.status(400).json({ message: 'missing fields' });
 }
 
-export const handleAuthFailController = (err: Error, req: any, res: any, next: NextFunction) => { 
+export const handleAuthFailController = (err: Error, req: any, res: any, next: NextFunction) => {
     if (err) {
         console.error(err.message)
         res.status(401).json({ message: "authentication failed" });
-    }  
+    }
 };
 
 export const handleAuthSuccessController = (req: any, res: any) => {
     const ipAddress = req.headers['x-forwarded-for'] as string;
     const userAgent = req.headers['user-agent'];
     googleAuth(req.user, ipAddress, userAgent).then((tokens: any) => {
-        res.status(200).json(tokens);
+        res.status(200).json({ message: "authentication success.", data: tokens });
     }).catch((error: any) => {
         res.status(400).json({ message: error.message });
     })
