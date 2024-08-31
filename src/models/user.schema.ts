@@ -51,7 +51,6 @@ const UserSchema = new Schema({
 });
 
 UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ userName: 1 }, { unique: true });
 UserSchema.index({ refreshToken: 1 }, { unique: true });
 
 
