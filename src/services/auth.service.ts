@@ -1,5 +1,6 @@
 import { Users } from "../models/user.schema";
 import { RegisterSchema } from "../types/auth.types";
+import { logs } from "../utils";
 import { comparePassword, hashPassword } from "../utils/hashing";
 import { _generateToken, _isTokenExpired, _refreshToken } from "../utils/jwt";
 import { environment } from "../utils/loadEnvironment";
@@ -15,7 +16,7 @@ export const registerUser = async (username: string, email: string, password: st
 
     await RegisterSchema.validate({ username, email, password })
 
-    console.log(`Registering user with email: ${email} and password: ${password}`);
+    logs.log(`Registering user with email: ${email} and password: ${password}`);
     const userNameExists = await Users.findOne({ userName: username }).select('_id');
 
     if (userNameExists) {
@@ -36,16 +37,16 @@ export const registerUser = async (username: string, email: string, password: st
             verificationCode: code
         })
         sendVerificationEmail(email, "Welcome to our Application! Verify your email address", code);
-        console.log('🎉 user registered successfully');
+        logs.log('🎉 user registered successfully');
     } catch (error: any) {
-        console.error('🚨 error while creating user ' + error.message);
+        logs.error('🚨 error while creating user ' + error.message);
         throw new Error('error while creating user' + error.message);
     }
 
 }
 
 export const loginUser = async (email: string, password: string) => {
-    console.log(`Logging in user with email: ${email}`);
+    logs.log(`Logging in user with email: ${email}`);
     const usersDb = await Users.findOne({ email }).select('password isVerified email userName avatar plan loginAttempts isAdmin');
     if (!usersDb) {
         throw new Error('invalid credentials');
@@ -106,7 +107,7 @@ export const refreshToken = async (refreshToken: string) => {
     try {
         await Users.updateOne({ refreshToken   }, { $set: { accessToken: newAccessToken, refreshToken: newRefreshToken, updated_at: new Date() } })
     } catch (error: any) {
-        console.error('🚨 error while updating tokens ' + error.message);
+        logs.error('🚨 error while updating tokens ' + error.message);
         throw new Error('error while updating tokens');
     }
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
@@ -133,10 +134,10 @@ export const resetPassword = async (email: string, code: number,  newPassword: s
     }
     const hashedPassword = await hashPassword(newPassword);
     try {
-        console.log('🔐 updating password : ');
+        logs.log('🔐 updating password : ');
         await Users.updateOne({ email }, { $set: { password: hashedPassword, verificationCode: null, updated_at: new Date() } });
     } catch (error: any) {
-        console.error('🚨 error while updating password ' + error.message);
+        logs.error('🚨 error while updating password ' + error.message);
         throw new Error('error while updating password');
     }
     
@@ -183,7 +184,7 @@ export const logout = async (accessToken: string, refreshToken: string) => {
     try {
         await Users.updateOne({ accessToken, refreshToken }, { $set : { accessToken: null, refreshToken: null, updated_at: new Date() } })
     } catch (error: any) {
-        console.error('🚨 error while revoking device ' + error.message);
+        logs.error('🚨 error while revoking device ' + error.message);
         throw new Error('error while revoking device');
     }
     return;
@@ -203,7 +204,7 @@ export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: s
             googleId: profile.id,
             avatar: profile.photos[0].value
         }).catch((err: any) => {
-            console.error("error creating new user with google auth" + err);
+            logs.error("error creating new user with google auth" + err);
             throw new Error("unable to complete the authentication process");
         })
 
@@ -228,7 +229,7 @@ export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: s
 //             facebookId: profile.id,
 //             avatar: profile.photos[0].value
 //         }).catch((err: any)=>{
-//             console.error("error creating new user with google auth"+err);
+//             logs.error("error creating new user with google auth"+err);
 //             throw new Error("unable to complete the authentication process");
 //         })
 

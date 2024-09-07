@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { googleAuth, loginUser, logout, refreshToken, registerUser, requestResetPassword, resetPassword, verifyResetPasswordCode, verifyUserEmail } from "../services/auth.service";
+import { logs } from "../utils";
 
 
 
@@ -93,7 +94,7 @@ export const resetPasswordController = (req: Request, res: Response) => {
 
 export const handleAuthFailController = (err: Error, req: any, res: any, next: NextFunction) => {
     if (err) {
-        console.error(err.message)
+        logs.error(err.message)
         res.status(401).json({ message: "authentication failed" });
     }
 };

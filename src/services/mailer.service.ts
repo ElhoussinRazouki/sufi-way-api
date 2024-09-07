@@ -1,4 +1,5 @@
 import { transporter } from "../config/mailer.config";
+import { logs } from "../utils";
 
 
 
@@ -24,7 +25,7 @@ const sendEmail = async (email: string, subject: string, text?: string, html?: s
             html
         })
     } catch (error: any) {
-        console.error('🚨 error while sending email '+error.message);
+        logs.error('🚨 error while sending email '+error.message);
         throw new Error('error while sending email');
     }
 }

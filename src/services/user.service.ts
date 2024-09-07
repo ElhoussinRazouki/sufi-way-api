@@ -4,6 +4,7 @@ import { Users } from "../models/user.schema"
 import { comparePassword, hashPassword } from "../utils/hashing";
 import { validateName, verifyPasswordStrength } from "../utils/string.format";
 import { environment } from "../utils/loadEnvironment";
+import { logs } from "../utils";
 
 
 const MAX_POCKETS: any = { free: 5, beginner: 10, pro: 30, premium: 100, admin: 100 };
@@ -71,7 +72,7 @@ export const changePassword = async (userId: string, oldPassword: string, newPas
     try {
         await Users.updateOne({ _id: userId }, { $set: { password: hashedPassword,  updated_at: new Date() } });
     } catch (error) {
-        console.log(error);
+        logs.log(error);
         throw new Error('password change failed');
     }
 }
@@ -102,7 +103,7 @@ export const changeName = async (userId: string, firstName: string, lastName: st
     try {
         await Users.updateOne({ _id: userId }, { $set: { ...updates, updated_at: new Date() }});
     } catch (error) {
-        console.log(error);
+        logs.log(error);
         throw new Error('name change failed');
     }
 }
@@ -123,7 +124,7 @@ export const changeAvatar = async (userId: string, avatarId?: string) => {
         return avatar;
 
     } catch (error) {
-        console.log(error);
+        logs.log(error);
         fs.unlinkSync(path.join(__dirname, `../../uploads/${avatarId}`));
         throw new Error('avatar update failed');
     }

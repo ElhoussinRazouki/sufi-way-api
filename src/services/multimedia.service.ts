@@ -2,7 +2,7 @@ import path from "path";
 import { MultiMedia } from "../models/multimedia.schema";
 import { MultiMediaDtoCreatePayload, MultiMediaDtoListPayload, MultiMediaDtoPatchPayload, MultiMediaType } from "../types/multimedia.types";
 import { environment } from "../utils/loadEnvironment";
-import { formattingAttachmentUrl } from "../utils";
+import { formattingAttachmentUrl, logs } from "../utils";
 
 
 export async function getMultiMediaList(filters: { type: MultiMediaType, page?: number, limit?: number, search?: string, sort?: "asc" | "desc" }) {
@@ -29,7 +29,7 @@ export async function getMultiMediaList(filters: { type: MultiMediaType, page?: 
         });
         return multiMediaList;
     } catch (error) {
-        console.error("Error: Multimedia, get : ", filters, error);
+        logs.error("Error: Multimedia, get : ", filters, error);
         throw new Error('Error while fetching multimedia');
     }
 }
@@ -42,7 +42,7 @@ export async function getMultiMediaById(multimediaId: string) {
         }
         return null;
     } catch (error) {
-        console.error("Error: Multimedia, getById : ", multimediaId, error);
+        logs.error("Error: Multimedia, getById : ", multimediaId, error);
         throw new Error('Error while fetching multimedia');
     }
 }
@@ -53,7 +53,7 @@ export async function createMultiMedia(multimediaPayload: { title: string, descr
         const newMultiMedia = await MultiMedia.create(multimediaPayload);
         return { ...newMultiMedia, url: formattingAttachmentUrl(newMultiMedia.url) };
     } catch (error) {
-        console.error("Error: Multimedia, create : ", multimediaPayload, error);
+        logs.error("Error: Multimedia, create : ", multimediaPayload, error);
         throw new Error('Error while creating multimedia');
     }
 }
@@ -74,7 +74,7 @@ export async function updateMultiMedia(multimediaId: string, multimediaPayload: 
         }
         return null;
     } catch (error) {
-        console.error("Error: Multimedia, update : ", multimediaId, multimediaPayload, error);
+        logs.error("Error: Multimedia, update : ", multimediaId, multimediaPayload, error);
         throw new Error('Error while updating multimedia');
     }
 }
@@ -84,7 +84,7 @@ export async function deleteMultiMedia(multimediaId: string) {
         const deletedMultiMedia = await MultiMedia.findByIdAndDelete(multimediaId);
         return deletedMultiMedia;
     } catch (error) {
-        console.error("Error: Multimedia, delete : ", multimediaId, error);
+        logs.error("Error: Multimedia, delete : ", multimediaId, error);
         throw new Error('Error while deleting multimedia');
     }
 }
