@@ -7,12 +7,12 @@ export function formattingAttachmentUrl(url: string) {
 
 function log(...messages: unknown[]) {
     const currentDate = new Date();
-    logs.log(currentDate.toISOString(), " : ", ...messages);
+    console.log(currentDate.toISOString(), " : ", ...messages);
 }
 
 function error(...messages: unknown[]) {
     const currentDate = new Date();
-    logs.error(currentDate, " : ", ...messages);
+    console.error(currentDate, " : ", ...messages);
 }
 
 export const logs = {

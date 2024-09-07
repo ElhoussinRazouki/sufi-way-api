@@ -24,6 +24,7 @@ export const loginController = async (req: Request, res: Response) => {
     loginUser(email, password).then((newTokens: any) => {
         res.status(200).json({ message: "user logged successfully", data: newTokens });
     }).catch((error) => {
+        logs.error(error);
         res.status(401).json({ message: error.message });
     })
 
