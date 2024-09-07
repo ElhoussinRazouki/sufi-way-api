@@ -1,10 +1,6 @@
 api for managing users interactions .
 
 
-## Base URL
-```
-https://mobtwin.com/api
-```
 
 ## Usage
 Available endpoints:
@@ -147,7 +143,7 @@ Results:
 ```
 #### to change the password
 
-the user will receive an email like `M-953150 is your mobtwin password reset code`
+the user will receive an email like `M-953150 is your app password reset code`
 
 to change the password:
 
