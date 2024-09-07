@@ -51,7 +51,6 @@ export const getProfile = async (_id: string) => {
     
 }
 
-
 export const changePassword = async (userId: string, oldPassword: string, newPassword: string, otp: number) => {
     if (!oldPassword || !newPassword || !otp) {
         throw new Error('missing fields');

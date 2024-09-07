@@ -9,6 +9,7 @@ import { authMiddleWare } from './middlewares/auth.middleware';
 import { attachmentRouter } from './routes/upload.route';
 import { multimediaRouter } from './routes/multimedia.route';
 import path from 'path';
+import { notesRouter } from './routes/note.route';
 
 
 
@@ -27,6 +28,7 @@ app.use("/auth", authRouter);
 app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);
 app.use("/user", userRouter);
+app.use("/notes", notesRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 

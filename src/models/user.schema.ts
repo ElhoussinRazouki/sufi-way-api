@@ -1,6 +1,16 @@
 import { Schema, model } from 'mongoose';
 
 
+const NoteSchema = new Schema({
+    title: String,
+    content: {
+        type: String,
+        default: ""
+    },
+    created_at: { type: Date, default: Date.now},
+    updated_at: { type: Date, default: Date.now}
+});
+
 const UserSchema = new Schema({
     userName: String,
     firstName: String,
@@ -45,6 +55,7 @@ const UserSchema = new Schema({
         }
     },
     isAdmin: { type: Boolean, default: false },
+    notes: { type: [NoteSchema], default: [] },
     removed_at: Date,
     created_at: { type: Date, default: Date.now},
     updated_at: { type: Date, default: Date.now}
