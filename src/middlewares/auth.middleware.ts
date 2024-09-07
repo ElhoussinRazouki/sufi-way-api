@@ -7,14 +7,14 @@ export type User = {
     userName: string;
     email: string;
     plan: string;
+    isAdmin: boolean;
     avatar: string;
     iat: number;
     exp: number;
-
 }
 
 
-export const authMiddleWare = async (req: Request, res: Response, next: NextFunction) => {
+export async function authMiddleWare (req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
         return res.status(401).json({ message: 'token is required.' });
@@ -25,4 +25,19 @@ export const authMiddleWare = async (req: Request, res: Response, next: NextFunc
     }
     req.user = decodedToken;
     next();
+}
+
+
+export async function authMiddleWareAdmin(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
+    if (user && user.isAdmin) {
+        // User is admin, proceed to the next middleware or route handler
+        return next();
+      }
+    
+      // If not, return an authorization error
+      return res.status(403).json({
+        error: 'Authorization error: Admin access is required',
+      });
+    
 }

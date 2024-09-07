@@ -8,7 +8,9 @@ passport.use(
         clientID: environment.GOOGLE_CLIENT_ID,
         clientSecret: environment.GOOGLE_CLIENT_SECRET,
         callbackURL: environment.GOOGLE_AUTH_CALLBACK,
-        scope: ["profile", "email"]
+        scope: ["profile", "email"],
+        // always show the consent screen
+
     }, async (accessToken: string, refreshToken: string, profile: any, callback: CallableFunction)=>{
         try {
             return callback(null, profile);

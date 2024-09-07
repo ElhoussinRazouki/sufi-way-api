@@ -46,7 +46,7 @@ export const registerUser = async (username: string, email: string, password: st
 
 export const loginUser = async (email: string, password: string) => {
     console.log(`Logging in user with email: ${email}`);
-    const usersDb = await Users.findOne({ email }).select('password isVerified email userName avatar plan loginAttempts');
+    const usersDb = await Users.findOne({ email }).select('password isVerified email userName avatar plan loginAttempts isAdmin');
     if (!usersDb) {
         throw new Error('invalid credentials');
     }
@@ -73,7 +73,7 @@ export const loginUser = async (email: string, password: string) => {
 
 
 export const verifyUserEmail = async (email: string, code: number) => {
-    const user = await Users.findOne({ email }).select('isVerified verificationCode email userName avatar plan');
+    const user = await Users.findOne({ email }).select('isVerified verificationCode email userName avatar plan isAdmin');
     if (!user) {
         throw new Error('invalid email');
     }
@@ -94,7 +94,7 @@ export const refreshToken = async (refreshToken: string) => {
     if (!refreshToken) {
         throw new Error('refresh token is required');
     }
-    const user = await Users.findOne({ refreshToken }).select('_id isVerified email userName avatar plan');
+    const user = await Users.findOne({ refreshToken }).select('_id isVerified email userName avatar plan isAdmin');
     if (!user) {
         throw new Error('invalid token');
     }
@@ -115,7 +115,7 @@ export const refreshToken = async (refreshToken: string) => {
 
 export const resetPassword = async (email: string, code: number,  newPassword: string) => {
    
-    const userDb = await Users.findOne({ email }).select('isVerified email userName avatar plan verificationCode');
+    const userDb = await Users.findOne({ email }).select('isVerified email userName avatar plan verificationCode isAdmin');
     if (!userDb) {
         throw new Error('invalid email');
     }
@@ -246,7 +246,7 @@ export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: s
 // ....
 
 const generateTokenForUser = async (user: any) => {
-    return await _generateToken({ id: user.id, userName: user.userName, email: user.email, plan: user.plan || 'free', avatar: user.avatar || '' }, environment.ACCESS_TOKEN_LIFE || "30m");
+    return await _generateToken({ id: user.id, userName: user.userName, email: user.email, plan: user.plan || 'free', avatar: user.avatar || '', isAdmin: user.isAdmin }, environment.ACCESS_TOKEN_LIFE || "30m");
 }
 
 const generateRefreshTokenForUser = async (userId: string) => {

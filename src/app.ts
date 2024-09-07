@@ -6,6 +6,9 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import { userRouter } from './routes/user.route';
 import { authMiddleWare } from './middlewares/auth.middleware';
+import { attachmentRouter } from './routes/upload.route';
+import { multimediaRouter } from './routes/multimedia.route';
+import path from 'path';
 
 
 
@@ -21,8 +24,11 @@ app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 app.use("/auth", authRouter);
+app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);
 app.use("/user", userRouter);
+app.use("/attachment", attachmentRouter);
+app.use("/multimedia", multimediaRouter);
 
 
 

@@ -14,6 +14,7 @@ export const environment: {
   HOST: string,
   ACCESS_TOKEN_LIFE: string,
   REFRESH_TOKEN_LIFE: string,
+  S3_BUCKET_HOST: string,
 } = {
   PORT: process.env.PORT as string,
   EMAIL_USER: process.env.EMAIL_USER as string,
@@ -26,4 +27,5 @@ export const environment: {
   HOST: process.env.HOST as string,
   ACCESS_TOKEN_LIFE: process.env.ACCESS_TOKEN_LIFE as string,
   REFRESH_TOKEN_LIFE: process.env.REFRESH_TOKEN_LIFE as string,
+  S3_BUCKET_HOST: process.env.S3_BUCKET as string,
 };
