@@ -30,7 +30,7 @@ app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);
 app.use("/user", userRouter);
 app.use("/notes", notesRouter);
-app.use("frequent-questions", frequentQuestionsRouter);
+app.use("/frequent-questions", frequentQuestionsRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 
