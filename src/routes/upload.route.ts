@@ -1,5 +1,5 @@
 import { Router } from "express";
-import uploadFileFactory from "../middlewares/upload.middleware";
+import uploadFileFactory from "../middlewares/upload.cloud.middleware";
 
 export const attachmentRouter = Router();
 

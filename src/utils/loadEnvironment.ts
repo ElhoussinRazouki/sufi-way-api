@@ -15,6 +15,12 @@ export const environment: {
   ACCESS_TOKEN_LIFE: string,
   REFRESH_TOKEN_LIFE: string,
   S3_BUCKET_HOST: string,
+  MINIO_ENDPOINT: string,
+  MINIO_HOST: string,
+  MINIO_PORT: number,
+  MINIO_ACCESS_KEY: string,
+  MINIO_SECRET_KEY: string,
+  MINIO_BUCKET_NAME: string,
 } = {
   PORT: process.env.PORT as string,
   EMAIL_USER: process.env.EMAIL_USER as string,
@@ -28,4 +34,10 @@ export const environment: {
   ACCESS_TOKEN_LIFE: process.env.ACCESS_TOKEN_LIFE as string,
   REFRESH_TOKEN_LIFE: process.env.REFRESH_TOKEN_LIFE as string,
   S3_BUCKET_HOST: process.env.S3_BUCKET as string,
+  MINIO_ENDPOINT: process.env.MINIO_ENDPOINT as string,
+  MINIO_HOST: process.env.MINIO_HOST as string,
+  MINIO_PORT: parseInt(process.env.MINIO_PORT as string),
+  MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY as string,
+  MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY as string,
+  MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME as string,
 };

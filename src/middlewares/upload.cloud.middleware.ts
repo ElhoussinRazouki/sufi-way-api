@@ -1,14 +1,14 @@
 import util from "util";
 import multer, { FileFilterCallback } from "multer";
 import { v4 as uuidv4 } from "uuid";
-import path from "path";
-import fs from "fs";
 import { Request, Response, NextFunction } from "express";
+import { minioClient } from "../config/cloud.storage.config";
+import { environment } from "../utils/loadEnvironment";
 
 // Define allowed file types
 type FileType = "image" | "video" | "audio" | "pdf";
 
-// Function to determine destination folder based on file type
+// Function to determine the folder path based on file type
 const getFileTypeFolder = (fileType: FileType): string | null => {
     switch (fileType) {
         case "image":
@@ -26,35 +26,8 @@ const getFileTypeFolder = (fileType: FileType): string | null => {
 
 // Factory function to return the multer middleware
 const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1024 * 1024) => {
-    let storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-            const folder = getFileTypeFolder(allowedFileType);
-            if (folder) {
-                const uploadPath = path.join(__dirname, `../../attachments/${folder}`);
-
-                try {
-                    // Check if the folder exists, if not, create it
-                    if (!fs.existsSync(uploadPath)) {
-                        fs.mkdirSync(uploadPath, { recursive: true });
-                    }
-                    cb(null, uploadPath);
-                } catch (err) {
-                    cb(new Error(`Failed to create directory: ${(err as Error).message}`), "");
-                }
-            } else {
-                cb(new Error("Invalid file type"), "");
-            }
-        },
-        filename: (req, file, cb) => {
-            // Generate unique file name using UUID
-            const fileExtension = path.extname(file.originalname);
-            const uniqueName = uuidv4() + fileExtension;
-            cb(null, uniqueName);
-
-            // Store the generated file name in req object to retrieve later
-            (req as any).uploadedFileName = uniqueName;
-        },
-    });
+    // In-memory storage for Multer
+    let storage = multer.memoryStorage();
 
     let uploadFile = multer({
         storage: storage,
@@ -85,12 +58,36 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
                 return res.status(400).send({ message: "Please upload a file!" });
             }
 
-            // Build file path without host, just from the attachments folder
-            const folder = getFileTypeFolder(allowedFileType);
-            const filePath = `/attachments/${folder}/${(req as any).uploadedFileName}`;
+            const file = req.file;
+            if (!file) {
+                return res.status(400).send({ message: "No file uploaded!" });
+            }
 
-            // Return file path in response
-            return res.status(200).send({ data: filePath });
+            // Generate unique file name using UUID
+            const fileExtension = file.originalname.split('.').pop();
+            const uniqueName = uuidv4() + (fileExtension ? `.${fileExtension}` : '');
+
+            const folder = getFileTypeFolder(allowedFileType);
+            if (!folder) {
+                return res.status(400).send({ message: "Invalid file type." });
+            }
+
+            // Upload to MinIO
+            minioClient.putObject(
+                environment.MINIO_BUCKET_NAME,
+                `/attachments/${folder}/${uniqueName}`, 
+                file.buffer, 
+                file.size, 
+                { 'Content-Type': file.mimetype },
+            ).then(() => {
+                return res.status(200).send({
+                data: `${environment.MINIO_HOST}/${environment.MINIO_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
+                });
+            }).catch((err) => {
+                return res.status(500).send({
+                    message: `Could not upload the file: ${(err as Error).message}`,
+                });
+            });
         } catch (err) {
             return res.status(500).send({
                 message: `Could not upload the file: ${(err as Error).message}`,
