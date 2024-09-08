@@ -12,7 +12,10 @@ export async function getMultiMediaList(filters: { type: MultiMediaType, page?: 
     const limit = filters.limit || 20;
 
     const skip = (page - 1) * limit;
-    const conditions = { type: filters.type };
+    const conditions: any = { type: filters.type };
+    if(filters.search){
+        conditions['title'] = { $regex: filters.search, $options: 'i' };
+    }
     const sort: { created_at?: "asc" | "desc" } = {}
     if (filters.sort) {
         sort['created_at'] = filters.sort;
