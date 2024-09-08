@@ -35,7 +35,7 @@ export const updateMultiMediaController = async (req: Request, res: Response) =>
     const multimediaId = req.params.id;
     const multimediaPayload = req.body;
     updateMultiMedia(multimediaId, multimediaPayload).then((updatedMultiMedia) => {
-        updatedMultiMedia? res.status(200).json({ message: "multimedia updated successfully.", data: updatedMultiMedia }) : res.status(404).json({ message: "multimedia not found." });
+        updatedMultiMedia? res.status(200).json({ message: "multimedia updated successfully." }) : res.status(404).json({ message: "multimedia not found." });
     }).catch((error) => {
         res.status(400).json({ message: error.message });
     });
@@ -44,7 +44,7 @@ export const updateMultiMediaController = async (req: Request, res: Response) =>
 export const deleteMultiMediaController = async (req: Request, res: Response) => {
     const multimediaId = req.params.id;
     deleteMultiMedia(multimediaId).then((deletedMultiMedia) => {
-        deletedMultiMedia? res.status(200).json({ message: "multimedia deleted successfully.", data: deletedMultiMedia }) : res.status(404).json({ message: "multimedia not found." });
+        deletedMultiMedia? res.status(200).json({ message: "multimedia deleted successfully." }) : res.status(404).json({ message: "multimedia not found." });
     }).catch((error) => {
         res.status(400).json({ message: error.message });
     });
