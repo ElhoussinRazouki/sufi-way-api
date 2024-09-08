@@ -10,6 +10,7 @@ import { attachmentRouter } from './routes/upload.route';
 import { multimediaRouter } from './routes/multimedia.route';
 import path from 'path';
 import { notesRouter } from './routes/note.route';
+import { frequentQuestionsRouter } from './routes/frequent-questions.route';
 
 
 
@@ -29,6 +30,7 @@ app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);
 app.use("/user", userRouter);
 app.use("/notes", notesRouter);
+app.use("freuqent-questions", frequentQuestionsRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 
