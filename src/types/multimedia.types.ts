@@ -16,6 +16,8 @@ export const MultiMediaDtoListPayload = Yup.object().shape({
 // for creating new multimedia
 export const MultiMediaDtoCreatePayload = Yup.object().shape({
     title: Yup.string().required(),
+    author: Yup.string().optional(),
+    thumbnail: Yup.string().optional(),
     description: Yup.string().optional(),
     url: Yup.string().required(),
     type: Yup.string().oneOf(MULTIMEDIA_TYPES).required()
@@ -25,6 +27,8 @@ export const MultiMediaDtoCreatePayload = Yup.object().shape({
 export const MultiMediaDtoPatchPayload = Yup.object().shape({
     multimediaId: Yup.string().required(),
     title: Yup.string().optional(),
+    author: Yup.string().optional(),
+    thumbnail: Yup.string().optional(),
     description: Yup.string().optional(),
     url: Yup.string().optional()
 });

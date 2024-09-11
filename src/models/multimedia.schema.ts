@@ -8,6 +8,8 @@ const MultiMediaSchema = new Schema({
         default: ""
     },
     url: { type: String, required: true },
+    author: { type: String },
+    thumbnail: { type: String },
     type: {
         type: String,
         enum: ["video", "audio", "pdf"],
