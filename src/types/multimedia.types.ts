@@ -8,7 +8,7 @@ export type MultiMediaType = typeof MULTIMEDIA_TYPES[number];
 export const MultiMediaDtoListPayload = Yup.object().shape({
     page: Yup.number().optional(),
     limit: Yup.number().optional(),
-    type: Yup.string().oneOf(MULTIMEDIA_TYPES).required(),
+    type: Yup.string().oneOf(MULTIMEDIA_TYPES).optional(),
     search: Yup.string().optional(),
     sort: Yup.string().oneOf(["asc", "desc"]).optional()
 }); 

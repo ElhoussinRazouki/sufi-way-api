@@ -1,7 +1,6 @@
 import path from "path";
 import { MultiMedia } from "../models/multimedia.schema";
 import { MultiMediaDtoCreatePayload, MultiMediaDtoListPayload, MultiMediaDtoPatchPayload, MultiMediaType } from "../types/multimedia.types";
-import { environment } from "../utils/loadEnvironment";
 import { formattingAttachmentUrl, logs } from "../utils";
 
 
@@ -12,7 +11,10 @@ export async function getMultiMediaList(filters: { type: MultiMediaType, page?: 
     const limit = filters.limit || 20;
 
     const skip = (page - 1) * limit;
-    const conditions: any = { type: filters.type };
+    const conditions: any = {  };
+    if(filters.type && filters.type !== 'all'){
+        conditions['type'] = filters.type;
+    }
     if(filters.search){
         conditions['title'] = { $regex: filters.search, $options: 'i' };
     }
@@ -30,7 +32,8 @@ export async function getMultiMediaList(filters: { type: MultiMediaType, page?: 
         multiMediaList.forEach((multiMedia) => {
             multiMedia.url = formattingAttachmentUrl(multiMedia.url);
         });
-        return multiMediaList;
+        const total = await MultiMedia.countDocuments(conditions);
+        return { data: multiMediaList, page, limit, total };
     } catch (error) {
         logs.error("Error: Multimedia, get : ", filters, error);
         throw new Error('Error while fetching multimedia');
