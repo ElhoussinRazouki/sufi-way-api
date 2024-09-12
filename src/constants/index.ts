@@ -1,1 +1,1 @@
-export const MULTIMEDIA_TYPES = ["video", "audio", "pdf", "all"] as const;
+export const MULTIMEDIA_TYPES = ["video", "audio", "pdf"] as const;

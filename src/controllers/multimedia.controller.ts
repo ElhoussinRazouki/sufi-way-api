@@ -3,10 +3,9 @@ import { createMultiMedia, deleteMultiMedia, getMultiMediaById, getMultiMediaLis
 
 
 
-
 export const getMultiMediaListController = async (req: Request, res: Response) => {
     const filters = req.query;
-    getMultiMediaList({ type: "video", ...filters }).then((result) => {
+    getMultiMediaList(filters).then((result) => {
         res.status(200).json(result);
     }).catch((error) => {
         res.status(400).json({ message: error.message });

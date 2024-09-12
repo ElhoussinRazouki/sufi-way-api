@@ -4,18 +4,18 @@ import { MultiMediaDtoCreatePayload, MultiMediaDtoListPayload, MultiMediaDtoPatc
 import { formattingAttachmentUrl, logs } from "../utils";
 
 
-export async function getMultiMediaList(filters: { type: MultiMediaType, page?: number, limit?: number, search?: string, sort?: "asc" | "desc" }) {
+export async function getMultiMediaList(filters: { type?: MultiMediaType, page?: string, limit?: string, search?: string, sort?: "asc" | "desc" }) {
 
     await MultiMediaDtoListPayload.validate(filters);
-    const page = filters.page || 1;
-    const limit = filters.limit || 20;
+    const page = filters.page ? parseInt(filters.page) : 1;
+    const limit = filters.limit ? parseInt(filters.limit) : 20;
 
     const skip = (page - 1) * limit;
-    const conditions: any = {  };
-    if(filters.type && filters.type !== 'all'){
+    const conditions: any = {};
+    if (filters.type) {
         conditions['type'] = filters.type;
     }
-    if(filters.search){
+    if (filters.search) {
         conditions['title'] = { $regex: filters.search, $options: 'i' };
     }
     const sort: { created_at?: "asc" | "desc" } = {}
@@ -76,7 +76,7 @@ export async function updateMultiMedia(multimediaId: string, multimediaPayload: 
         // update then check if the update applies to some one return true else return false
         const updatedMultiMedia = await MultiMedia.findByIdAndUpdate(multimediaId, multimediaPayload, { new: true });
         if (updatedMultiMedia) {
-            return {...updatedMultiMedia, url: formattingAttachmentUrl(updatedMultiMedia.url)};
+            return { ...updatedMultiMedia, url: formattingAttachmentUrl(updatedMultiMedia.url) };
         }
         return null;
     } catch (error) {
