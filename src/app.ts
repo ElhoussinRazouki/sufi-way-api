@@ -5,7 +5,7 @@ import { authRouter } from './routes/auth.route';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import { userRouter } from './routes/user.route';
-import { authMiddleWare } from './middlewares/auth.middleware';
+import { authMiddleWare, authMiddleWareAdmin } from './middlewares/auth.middleware';
 import { attachmentRouter } from './routes/upload.route';
 import { multimediaRouter } from './routes/multimedia.route';
 import path from 'path';
@@ -34,7 +34,7 @@ app.use("/notes", notesRouter);
 app.use("/frequent-questions", frequentQuestionsRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
-app.use("/authors", authorsRouter);
+app.use("/authors", authMiddleWareAdmin, authorsRouter);
 
 
 
