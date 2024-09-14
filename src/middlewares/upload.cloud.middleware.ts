@@ -81,7 +81,12 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
                 { 'Content-Type': file.mimetype },
             ).then(() => {
                 return res.status(200).send({
-                data: `${environment.MINIO_HOST}/${environment.MINIO_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
+                data: {
+                    url: `${environment.MINIO_HOST}/${environment.MINIO_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
+                    name: uniqueName,
+                    type: file.mimetype,
+                    size: file.size
+                },
                 });
             }).catch((err) => {
                 return res.status(500).send({

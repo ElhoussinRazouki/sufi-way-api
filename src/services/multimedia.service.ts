@@ -1,5 +1,5 @@
 import path from "path";
-import { MultiMedia } from "../models/multimedia.schema";
+import { Author, MultiMedia } from "../models/multimedia.schema";
 import { MultiMediaDtoCreatePayload, MultiMediaDtoListPayload, MultiMediaDtoPatchPayload, MultiMediaType } from "../types/multimedia.types";
 import { formattingAttachmentUrl, logs } from "../utils";
 
@@ -28,7 +28,12 @@ export async function getMultiMediaList(filters: { type?: MultiMediaType, page?:
     }
 
     try {
-        const multiMediaList = await MultiMedia.find(conditions).sort(sort).skip(skip).limit(limit).lean();
+        const multiMediaList = await MultiMedia.find(conditions).sort(sort).skip(skip).limit(limit).populate({
+            path: 'author_id',
+            model: Author,
+            select: '_id name avatar bio',
+        })
+            .lean();
         multiMediaList.forEach((multiMedia) => {
             multiMedia.url = formattingAttachmentUrl(multiMedia.url);
         });
@@ -42,11 +47,13 @@ export async function getMultiMediaList(filters: { type?: MultiMediaType, page?:
 
 export async function getMultiMediaById(multimediaId: string) {
     try {
-        const multiMedia = await MultiMedia.findById(multimediaId).lean();
-        if (multiMedia) {
-            return { ...multiMedia, url: formattingAttachmentUrl(multiMedia.url) };
-        }
-        return null;
+        const multiMedia = await MultiMedia.findById(multimediaId).populate({
+            path: 'author_id',
+            model: Author,
+            select: '_id name avatar bio', 
+          }).lean();
+        return multiMedia;
+
     } catch (error) {
         logs.error("Error: Multimedia, getById : ", multimediaId, error);
         throw new Error('Error while fetching multimedia');
@@ -56,8 +63,13 @@ export async function getMultiMediaById(multimediaId: string) {
 export async function createMultiMedia(multimediaPayload: { title: string, description?: string, url: string, type: MultiMediaType }) {
     await MultiMediaDtoCreatePayload.validate(multimediaPayload);
     try {
-        const newMultiMedia = await MultiMedia.create(multimediaPayload);
-        return { ...newMultiMedia, url: formattingAttachmentUrl(newMultiMedia.url) };
+        const newMultiMedia = await (await MultiMedia.create(multimediaPayload)).populate({
+            path: 'author_id',
+            model: Author,
+            select: '_id name avatar bio', 
+          })
+
+        return newMultiMedia.toJSON();
     } catch (error) {
         logs.error("Error: Multimedia, create : ", multimediaPayload, error);
         throw new Error('Error while creating multimedia');
@@ -74,11 +86,13 @@ export async function updateMultiMedia(multimediaId: string, multimediaPayload: 
     }
     try {
         // update then check if the update applies to some one return true else return false
-        const updatedMultiMedia = await MultiMedia.findByIdAndUpdate(multimediaId, multimediaPayload, { new: true });
-        if (updatedMultiMedia) {
-            return { ...updatedMultiMedia, url: formattingAttachmentUrl(updatedMultiMedia.url) };
-        }
-        return null;
+        const updatedMultiMedia = await MultiMedia.findByIdAndUpdate(multimediaId, {...multimediaPayload, updated_at: new Date()}, { new: true }).populate({
+            path: 'author_id',
+            model: Author,
+            select: '_id name avatar bio', 
+          });
+
+        return updatedMultiMedia?.toJSON();
     } catch (error) {
         logs.error("Error: Multimedia, update : ", multimediaId, multimediaPayload, error);
         throw new Error('Error while updating multimedia');
@@ -87,8 +101,12 @@ export async function updateMultiMedia(multimediaId: string, multimediaPayload: 
 
 export async function deleteMultiMedia(multimediaId: string) {
     try {
-        const deletedMultiMedia = await MultiMedia.findByIdAndDelete(multimediaId);
-        return deletedMultiMedia;
+        const deletedMultiMedia = await MultiMedia.findByIdAndDelete(multimediaId).populate({
+            path: 'author_id',
+            model: Author,
+            select: '_id name avatar bio', 
+          });
+        return deletedMultiMedia?.toJSON();
     } catch (error) {
         logs.error("Error: Multimedia, delete : ", multimediaId, error);
         throw new Error('Error while deleting multimedia');

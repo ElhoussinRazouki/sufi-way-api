@@ -11,6 +11,7 @@ import { multimediaRouter } from './routes/multimedia.route';
 import path from 'path';
 import { notesRouter } from './routes/note.route';
 import { frequentQuestionsRouter } from './routes/frequent-questions.route';
+import { authorsRouter } from './routes/authors.route';
 
 
 
@@ -33,6 +34,8 @@ app.use("/notes", notesRouter);
 app.use("/frequent-questions", frequentQuestionsRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
+app.use("/authors", authorsRouter);
+
 
 
 
