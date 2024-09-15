@@ -4,8 +4,8 @@ const AuthorSchema = new Schema({
     name: String,
     avatar: String,
     bio: String,
-    created_at: { type: Date, default: Date.now},
-    updated_at: { type: Date, default: Date.now}
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 
 const MultiMediaSchema = new Schema({
@@ -22,11 +22,13 @@ const MultiMediaSchema = new Schema({
         enum: ["video", "audio", "pdf"],
         required: true
     },
-    created_at: { type: Date, default: Date.now},
-    updated_at: { type: Date, default: Date.now}
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 
 MultiMediaSchema.index({ type: 1 });
+MultiMediaSchema.index({ author_id: 1 });
+MultiMediaSchema.index({ title: 1 });
 
 export const MultiMedia = model('MultiMedia', MultiMediaSchema);
 export const Author = model('Author', AuthorSchema);
