@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 const AuthorSchema = new Schema({
-    name: String,
+    name: { type: String, required: true },
     avatar: String,
     bio: String,
     created_at: { type: Date, default: Date.now },
@@ -9,11 +9,8 @@ const AuthorSchema = new Schema({
 });
 
 const MultiMediaSchema = new Schema({
-    title: String,
-    description: {
-        type: String,
-        default: ""
-    },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
     url: { type: String, required: true },
     author_id: { type: Schema.Types.ObjectId, ref: 'Author' },
     thumbnail: { type: String },

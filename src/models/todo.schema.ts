@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 const TodoSchema = new Schema({
-    title: String,
+    title: { type: String, default: false },
     user_id: { type: Schema.Types.ObjectId, ref: 'User' },
     checked: { type: Boolean, default: false },
     created_at: { type: Date, default: Date.now },
