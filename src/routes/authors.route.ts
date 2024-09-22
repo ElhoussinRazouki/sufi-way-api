@@ -4,7 +4,7 @@ import { createController, detailsController, listController, RemoveController, 
 export const authorsRouter = Router();
 
 
-// profile routes
+// authors routes
 authorsRouter.post('/', createController);
 authorsRouter.get('/', listController );
 authorsRouter.get('/:id', detailsController);

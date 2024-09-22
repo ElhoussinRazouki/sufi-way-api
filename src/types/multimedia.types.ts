@@ -16,7 +16,7 @@ export const MultiMediaDtoListPayload = Yup.object().shape({
 // for creating new multimedia
 export const MultiMediaDtoCreatePayload = Yup.object().shape({
     title: Yup.string().required(),
-    author: Yup.string().optional(),
+    author_id: Yup.string().required(),
     thumbnail: Yup.string().optional(),
     description: Yup.string().optional(),
     url: Yup.string().required(),

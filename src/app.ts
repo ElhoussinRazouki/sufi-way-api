@@ -12,6 +12,7 @@ import path from 'path';
 import { notesRouter } from './routes/note.route';
 import { frequentQuestionsRouter } from './routes/frequent-questions.route';
 import { authorsRouter } from './routes/authors.route';
+import { todoRouter } from './routes/todo.route';
 
 
 
@@ -35,6 +36,7 @@ app.use("/frequent-questions", frequentQuestionsRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 app.use("/authors", authMiddleWareAdmin, authorsRouter);
+app.use("/todo", todoRouter);
 
 
 
