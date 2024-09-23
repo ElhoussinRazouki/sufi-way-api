@@ -4,7 +4,7 @@ import { MultiMediaDtoCreatePayload, MultiMediaDtoListPayload, MultiMediaDtoPatc
 import { formattingAttachmentUrl, logs } from "../utils";
 
 
-export async function getMultiMediaList(filters: { type?: MultiMediaType, page?: string, limit?: string, search?: string, author_id?: string, sort?: "asc" | "desc" }) {
+export async function getMultiMediaList(filters: { type?: MultiMediaType, page?: string, limit?: string, title?: string, author_id?: string, sort?: "asc" | "desc" }) {
 
     await MultiMediaDtoListPayload.validate(filters);
     const page = filters.page ? parseInt(filters.page) : 1;
@@ -15,8 +15,8 @@ export async function getMultiMediaList(filters: { type?: MultiMediaType, page?:
     if (filters.type) {
         conditions['type'] = filters.type;
     }
-    if (filters.search) {
-        conditions['title'] = { $regex: filters.search, $options: 'i' };
+    if (filters.title) {
+        conditions['title'] = { $regex: filters.title, $options: 'i' };
     }
     if(filters.author_id){
         conditions['author_id'] = filters.author_id;

@@ -3,15 +3,15 @@ import { AuthorDtoCreatePayload, AuthorDtoPatchPayload } from "../types/author.t
 import { logs } from "../utils";
 
 
-async function list(filters: { page?: string, limit?: string, search?: string, sort?: "asc" | "desc" }) {
+async function list(filters: { page?: string, limit?: string, name?: string, sort?: "asc" | "desc" }) {
 
     const page = filters.page ? parseInt(filters.page) : 1;
     const limit = filters.limit ? parseInt(filters.limit) : 20;
 
     const skip = (page - 1) * limit;
     const conditions: any = {};
-    if (filters.search) {
-        conditions['name'] = { $regex: filters.search, $options: 'i' };
+    if (filters.name) {
+        conditions['name'] = { $regex: filters.name, $options: 'i' };
     }
     const sort: { created_at?: "asc" | "desc" } = {}
     if (filters.sort) {
