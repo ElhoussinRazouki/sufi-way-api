@@ -9,6 +9,7 @@ async function list(filters: { page?: string, limit?: string, name?: string, sor
     const limit = filters.limit ? parseInt(filters.limit) : 20;
 
     const skip = (page - 1) * limit;
+    
     const conditions: any = {};
     if (filters.name) {
         conditions['name'] = { $regex: filters.name, $options: 'i' };
