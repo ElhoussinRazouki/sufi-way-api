@@ -7,7 +7,7 @@ import { logs } from '../utils';
 const BUCKET_NAME = 'sufi-tariqa'
 
 export const minioClient = new Minio.Client({
-    endPoint: environment.MINIO_HOST,
+    endPoint: environment.MINIO_ENDPOINT,
     useSSL: true,
     accessKey: environment.MINIO_ACCESS_KEY,
     secretKey: environment.MINIO_SECRET_KEY,
