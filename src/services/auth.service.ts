@@ -74,7 +74,7 @@ export const loginUser = async (email: string, password: string) => {
 
 
 export const verifyUserEmail = async (email: string, code: number) => {
-    const user = await Users.findOne({ email }).select('isVerified verificationCode email userName avatar plan isAdmin');
+    const user = await Users.findOne({ email }).select('_id isVerified verificationCode email userName avatar plan isAdmin');
     if (!user) {
         throw new Error('invalid email');
     }
