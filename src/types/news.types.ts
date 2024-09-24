@@ -1,21 +1,20 @@
 import * as Yup from "yup";
-import { MULTIMEDIA_TYPES } from "../constants"
 
 
 // for getting list
-export const AuthorDtoSchema = Yup.object().shape({
-    name: Yup.string().required(),
-    avatar: Yup.string().optional(),
-    bio: Yup.string().optional()
+export const NewsDtoSchema = Yup.object().shape({
+    title: Yup.string().required(),
+    description: Yup.string().required(),
+    url: Yup.string().required()
 }); 
 
 // for creating new one
-export const AuthorDtoCreatePayload = AuthorDtoSchema;
+export const NewsDtoCreatePayload = NewsDtoSchema;
 
 // for updating multimedia
-export const AuthorDtoPatchPayload = Yup.object().shape({
+export const NewsDtoPatchPayload = Yup.object().shape({
     id: Yup.string().required(),
-    name: Yup.string().optional(),
-    avatar: Yup.string().optional(),
-    bio: Yup.string().optional()
+    title: Yup.string().optional(),
+    description: Yup.string().optional(),
+    url: Yup.string().optional(),
 });
