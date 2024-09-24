@@ -82,7 +82,7 @@ export const verifyUserEmail = async (email: string, code: number) => {
         throw new Error('verification failed');
     }
     if (user.verificationCode === code) {
-        const accessToken = await generateTokenForUser({...user.toJSON(), isVerified: true});
+        const accessToken = await generateTokenForUser({...user.toJSON(), id: user.id , isVerified: true});
         const refreshToken = await generateRefreshTokenForUser(user.id);
         await Users.updateOne({ email }, { $set: { isVerified: true, accessToken, refreshToken, updated_at: new Date() } });
         return { accessToken, refreshToken };
