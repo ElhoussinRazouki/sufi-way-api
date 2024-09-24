@@ -34,7 +34,7 @@ async function list(filters: { page?: string, limit?: string, title?: string, so
 
 async function details(id: string) {
     try {
-        const details = await News.findById(id).select("title description url created_at").lean();
+        const details = await News.findById(id).select("title description url created_at updated_at").lean();
         return details;
     } catch (error) {
         logs.error("Error: News, getById : ", id, error);
