@@ -103,9 +103,15 @@ export const handleAuthFailController = (err: Error, req: any, res: any, next: N
 export const handleAuthSuccessController = (req: any, res: any) => {
     const ipAddress = req.headers['x-forwarded-for'] as string;
     const userAgent = req.headers['user-agent'];
-    googleAuth(req.user, ipAddress, userAgent).then((tokens: any) => {
-        res.status(200).json({ message: "authentication success.", data: tokens });
+    googleAuth(req.user, ipAddress, userAgent).then(({ accessToken, refreshToken }: any) => {
+        const deepLink = `sofi_tariqa://auth?success=true&accessToken=${accessToken}&refreshToken=${refreshToken}`;
+        res.status(200).redirect(deepLink);
+
+        // res.status(200).json({ message: "authentication success.", data: tokens });
     }).catch((error: any) => {
-        res.status(400).json({ message: error.message });
+        // res.status(400).json({ message: error.message });
+        const deepLink = `sofi_tariqa://auth?success=false&error=${error.message}`;
+        res.status(400).redirect(deepLink);
+
     })
 };
