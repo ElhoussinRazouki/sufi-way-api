@@ -2,20 +2,17 @@ import { Users } from "../models/user.schema";
 import { NoteDtoCreatePayload, NoteDtoPatchPayload } from "../types/note.types";
 import { logs } from "../utils";
 
-
-
 export async function getUserNotes(userId: string) {
-    if (!userId) throw new Error('user id is required');
+    if (!userId) throw new Error('معرّف المستخدم مطلوب');
 
     try {
         const userDb = await Users.findOne({ _id: userId }).select('notes').lean();
         if (userDb) return userDb.notes;
-        return null
+        return null;
     } catch (error) {
         logs.error("Error: User, getNotes : ", userId, error);
-        throw new Error('Error while fetching user notes');
+        throw new Error('خطأ أثناء جلب ملاحظات المستخدم');
     }
-
 }
 
 export async function createUserNote(userId: string, payload: { title: string, description?: string }) {
@@ -29,13 +26,12 @@ export async function createUserNote(userId: string, payload: { title: string, d
         return null;
     } catch (error) {
         logs.error("Error: User, createNote : ", userId, payload, error);
-        throw new Error('Error while creating note');
+        throw new Error('خطأ أثناء إنشاء الملاحظة');
     }
-
 }
 
 export async function deleteUserNote(userId: string, noteId: string) {
-    if (!userId || !noteId) throw new Error('user id and note id are required');
+    if (!userId || !noteId) throw new Error('معرّف المستخدم ومعرّف الملاحظة مطلوبان');
 
     try {
         const result = await Users.updateOne({ _id: userId }, { $pull: { notes: { _id: noteId } } });
@@ -45,9 +41,8 @@ export async function deleteUserNote(userId: string, noteId: string) {
         return null;
     } catch (error) {
         logs.error("Error: User, deleteNote : ", userId, noteId, error);
-        throw new Error('Error while deleting note');
+        throw new Error('خطأ أثناء حذف الملاحظة');
     }
-
 }
 
 export async function updateUserNote(userId: string, noteId: string, payload: { title?: string, description?: string }) {
@@ -55,7 +50,7 @@ export async function updateUserNote(userId: string, noteId: string, payload: { 
 
     // check payload length
     if (Object.keys(payload).length === 0) {
-        throw new Error('at least make a change to be considered an update');
+        throw new Error('يجب إجراء تغيير واحد على الأقل ليتم اعتباره تحديثًا');
     }
 
     const patch: any = { "notes.$.updated_at": new Date() };
@@ -70,7 +65,6 @@ export async function updateUserNote(userId: string, noteId: string, payload: { 
         return null;
     } catch (error) {
         logs.error("Error: User, updateNote : ", userId, noteId, payload, error);
-        throw new Error('Error while updating note');
+        throw new Error('خطأ أثناء تحديث الملاحظة');
     }
-
 }

@@ -26,7 +26,7 @@ const sendEmail = async (email: string, subject: string, text?: string, html?: s
         })
     } catch (error: any) {
         logs.error('🚨 error while sending email '+error.message);
-        throw new Error('error while sending email');
+        throw new Error('خطأ أثناء إرسال البريد الإلكتروني');
     }
 }
 

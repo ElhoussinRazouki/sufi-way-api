@@ -16,7 +16,7 @@ export const _refreshToken = async (accessToken: string, lifeTime: string) => {
     const newToken = jwt.sign(decodedToken as Object, environment.JWT_SECRET, { expiresIn: lifeTime });
     return newToken;
   } catch (error: any) {
-    throw new Error('invalid token refresh'+error.message)
+    throw new Error('invalid token refresh '+error.message)
   }
 }
 

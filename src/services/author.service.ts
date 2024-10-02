@@ -2,14 +2,12 @@ import { Author } from "../models/multimedia.schema";
 import { AuthorDtoCreatePayload, AuthorDtoPatchPayload } from "../types/author.types";
 import { logs } from "../utils";
 
-
 async function list(filters: { page?: string, limit?: string, name?: string, sort?: "asc" | "desc" }) {
-
     const page = filters.page ? parseInt(filters.page) : 1;
     const limit = filters.limit ? parseInt(filters.limit) : 20;
 
     const skip = (page - 1) * limit;
-    
+
     const conditions: any = {};
     if (filters.name) {
         conditions['name'] = { $regex: filters.name, $options: 'i' };
@@ -20,7 +18,7 @@ async function list(filters: { page?: string, limit?: string, name?: string, sor
     }
 
     if (limit > 100) {
-        throw new Error('limit cannot exceed 100');
+        throw new Error('لا يمكن أن يتجاوز الحد 100');
     }
 
     try {
@@ -29,7 +27,7 @@ async function list(filters: { page?: string, limit?: string, name?: string, sor
         return { data: list, page, limit, total };
     } catch (error) {
         logs.error("Error: Authors, get : ", filters, error);
-        throw new Error('Error while fetching Authors');
+        throw new Error('خطأ أثناء جلب المؤلفين');
     }
 }
 
@@ -39,7 +37,7 @@ async function details(id: string) {
         return details;
     } catch (error) {
         logs.error("Error: authors, getById : ", id, error);
-        throw new Error('Error while fetching authors');
+        throw new Error('خطأ أثناء جلب المؤلفين');
     }
 }
 
@@ -50,25 +48,23 @@ async function create(payload: { name: string, avatar?: string, bio: string }) {
         return newRecord.toJSON();
     } catch (error) {
         logs.error("Error: Author, create : ", payload, error);
-        throw new Error('Error while creating author');
+        throw new Error('خطأ أثناء إنشاء المؤلف');
     }
 }
 
 async function update(id: string, payload: { name?: string, avatar?: string, bio?: string }) {
-
     await AuthorDtoPatchPayload.validate({ id, ...payload });
 
     // check if there is any update
     if (Object.keys(payload).length === 0) {
-        throw new Error('at least one change is required to apply the update.');
+        throw new Error('تغيير واحد على الأقل مطلوب لتطبيق التحديث.');
     }
     try {
-        // update then check if the update applies to some one return true else return false
         const UpdatedRecord = await Author.findByIdAndUpdate(id, { ...payload, updated_at: new Date() }, { new: true });
         return UpdatedRecord?.toJSON();
     } catch (error) {
         logs.error("Error: Author, update : ", id, payload, error);
-        throw new Error('Error while updating author');
+        throw new Error('خطأ أثناء تحديث المؤلف');
     }
 }
 
@@ -78,7 +74,7 @@ async function remove(id: string) {
         return removedRecord?.toJSON();
     } catch (error) {
         logs.error("Error: Author, delete : ", id, error);
-        throw new Error('Error while deleting Author');
+        throw new Error('خطأ أثناء حذف المؤلف');
     }
 }
 
