@@ -1,20 +1,19 @@
 import * as Yup from "yup";
 
-
 // for getting list
 export const NewsDtoSchema = Yup.object().shape({
-    title: Yup.string().required(),
-    description: Yup.string().required(),
-    url: Yup.string().required()
+    title: Yup.string().required('العنوان مطلوب'),
+    description: Yup.string().required('الوصف مطلوب'),
+    url: Yup.array().of(Yup.string()).min(1, 'مطلوب على الأقل رابط واحد').required('الروابط مطلوبة')
 }); 
 
-// for creating new one
+// لإنشاء جديد
 export const NewsDtoCreatePayload = NewsDtoSchema;
 
-// for updating multimedia
+// لتحديث الوسائط المتعددة
 export const NewsDtoPatchPayload = Yup.object().shape({
-    id: Yup.string().required(),
+    id: Yup.string().required('المعرف مطلوب'),
     title: Yup.string().optional(),
     description: Yup.string().optional(),
-    url: Yup.string().optional(),
+    url: Yup.array().of(Yup.string()).min(1, 'مطلوب على الأقل رابط واحد').optional(),
 });

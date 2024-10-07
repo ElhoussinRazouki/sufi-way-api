@@ -40,7 +40,7 @@ async function details(id: string) {
     }
 }
 
-async function create(payload: { title: string, description: string, url: string }) {
+async function create(payload: { title: string, description: string, url: string[] }) {
     await NewsDtoCreatePayload.validate(payload);
     try {
         const newRecord = await News.create(payload);
@@ -51,7 +51,7 @@ async function create(payload: { title: string, description: string, url: string
     }
 }
 
-async function update(id: string, payload: { title?: string, description?: string, url?: string }) {
+async function update(id: string, payload: { title?: string, description?: string, url?: string[] }) {
     await NewsDtoPatchPayload.validate({ id, ...payload });
 
     // check if there is any update
