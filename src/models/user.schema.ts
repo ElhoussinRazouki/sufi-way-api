@@ -23,7 +23,10 @@ const UserSchema = new Schema({
     },
     verificationCode: Number,
     accessToken: String,
-    refreshToken: String,
+    refreshToken: {
+        type: String,
+        default: null
+    },
     avatar: String,
     googleId: String,
     loginAttempts: {
@@ -62,7 +65,7 @@ const UserSchema = new Schema({
 });
 
 UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ refreshToken: 1 }, { unique: true });
+UserSchema.index({ refreshToken: 1 });
 
 
 export const Users = model('User', UserSchema);
