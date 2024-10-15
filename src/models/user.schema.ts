@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { FAVORITES_TYPES } from '../constants';
 
 
 const NoteSchema = new Schema({
@@ -7,8 +8,15 @@ const NoteSchema = new Schema({
         type: String,
         default: ""
     },
-    created_at: { type: Date, default: Date.now},
-    updated_at: { type: Date, default: Date.now}
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
+
+const FavoriteSchema = new Schema({
+    type: { type: String, enum: FAVORITES_TYPES, required: true },
+    refId: { type: Schema.Types.ObjectId, required: true },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 
 const UserSchema = new Schema({
@@ -60,9 +68,10 @@ const UserSchema = new Schema({
     isAdmin: { type: Boolean, default: false },
     notes: { type: [NoteSchema], default: [] },
     lastTimeAskSheikh: { type: Date, default: null },
+    favorites: { type: [FavoriteSchema], default: [] },
     removed_at: Date,
-    created_at: { type: Date, default: Date.now},
-    updated_at: { type: Date, default: Date.now}
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 
 UserSchema.index({ email: 1 }, { unique: true });

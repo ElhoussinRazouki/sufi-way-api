@@ -16,6 +16,7 @@ import { newsRouter } from './routes/news.route';
 import { FQRouter } from './routes/fq.route';
 import { GeneralSettingsRouter } from './routes/general.settings.route';
 import { commonRouter } from './routes/common.route';
+import { favoritesRouter } from './routes/favorites.route';
 
 
 
@@ -36,6 +37,7 @@ app.use(authMiddleWare);
 app.use("/", commonRouter)
 app.use("/user", userRouter);
 app.use("/notes", notesRouter);
+app.use("/favorites", favoritesRouter);
 app.use("/frequent-questions", FQRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
