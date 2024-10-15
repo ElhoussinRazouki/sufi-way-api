@@ -14,6 +14,8 @@ import { authorsRouter } from './routes/authors.route';
 import { todoRouter } from './routes/todo.route';
 import { newsRouter } from './routes/news.route';
 import { FQRouter } from './routes/fq.route';
+import { GeneralSettingsRouter } from './routes/general.settings.route';
+import { commonRouter } from './routes/common.route';
 
 
 
@@ -31,6 +33,7 @@ app.use(passport.initialize());
 app.use("/auth", authRouter);
 app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);
+app.use("/", commonRouter)
 app.use("/user", userRouter);
 app.use("/notes", notesRouter);
 app.use("/frequent-questions", FQRouter);
@@ -39,6 +42,7 @@ app.use("/multimedia", multimediaRouter);
 app.use("/authors", authMiddleWareAdmin, authorsRouter);
 app.use("/news", newsRouter);
 app.use("/todo", todoRouter);
+app.use("/general-settings", authMiddleWareAdmin, GeneralSettingsRouter);
 
 
 

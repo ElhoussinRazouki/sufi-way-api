@@ -59,6 +59,7 @@ const UserSchema = new Schema({
     },
     isAdmin: { type: Boolean, default: false },
     notes: { type: [NoteSchema], default: [] },
+    lastTimeAskSheikh: { type: Date, default: null },
     removed_at: Date,
     created_at: { type: Date, default: Date.now},
     updated_at: { type: Date, default: Date.now}
