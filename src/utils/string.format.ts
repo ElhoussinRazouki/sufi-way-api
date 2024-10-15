@@ -8,9 +8,8 @@ export const verifyPasswordStrength = (password: string) => {
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 
-    const isStrong = password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+    const isStrong = password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber;
 
     return isStrong;
 }

@@ -121,7 +121,7 @@ export const resetPassword = async (email: string, code: number, newPassword: st
         throw new Error('رمز التحقق غير صالح');
     }
     if (!verifyPasswordStrength(newPassword)) {
-        throw new Error('حاول استخدام كلمة مرور أقوى تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد ورمز خاص واحد');
+        throw new Error('حاول استخدام كلمة مرور أقوى تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد على الأقل');
     }
     const hashedPassword = await hashPassword(newPassword);
     try {
