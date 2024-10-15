@@ -46,9 +46,9 @@ export const loginUser = async (email: string, password: string) => {
     if (!usersDb) {
         throw new Error('المعلومات غير صحيحة حاول مرة أخرى');
     }
-    if (usersDb.loginAttempts.attempts as number >= MAX_LOGIN_ATTEMPTS && new Date().getTime() - (usersDb.loginAttempts?.lastAttemptAt as Date).getTime() < RESET_INTERVAL_MINUTES * 60 * 1000) {
-        throw new Error('لقد وصلت إلى الحد الأقصى من المحاولات، حاول مرة أخرى لاحقًا');
-    }
+    // if (usersDb.loginAttempts.attempts as number >= MAX_LOGIN_ATTEMPTS && new Date().getTime() - (usersDb.loginAttempts?.lastAttemptAt as Date).getTime() < RESET_INTERVAL_MINUTES * 60 * 1000) {
+    //     throw new Error('لقد وصلت إلى الحد الأقصى من المحاولات، حاول مرة أخرى لاحقًا');
+    // }
     const isPasswordValid = await comparePassword(password, usersDb.password || '');
 
     if (!isPasswordValid) {
