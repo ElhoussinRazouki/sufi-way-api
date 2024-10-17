@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { Author, MultiMedia } from "../models/multimedia.schema";
 import { News } from "../models/news.schema";
 import { Users } from "../models/user.schema";
@@ -33,6 +34,12 @@ export async function getUserFavorites(userId: string) {
 
 export async function createUserFavorite(userId: string, payload: FavoriteDtoPayload) {
     await FavoriteDtoCreatePayload.validate({ ...payload, userId });
+
+    // check if already the news or multimedia refId exists in the user favorites
+    const user = await Users.findOne({ _id: userId }).select('favorites').lean();
+    if (!user) throw new Error('المستخدم غير موجود');
+    const foundFavorite = user.favorites.find(favorite => favorite.refId.toString() === payload.refId);
+    if (foundFavorite) throw new Error('المفضلة موجودة بالفعل');
 
     // check if actually the news or multimedia refId exists before pushing it 
     if (payload.type === 'news') {
