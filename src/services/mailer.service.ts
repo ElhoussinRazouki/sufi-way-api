@@ -9,6 +9,11 @@ export const askSheikh = async ({ email, subject, question }: { email: string, s
     await sendEmail(GeneralSettings.sheikhEmail, subject, undefined, AskSheikhTemplate(email, subject, question, GeneralSettings.supportEmail));
 }
 
+export const contactSupport = async ({ email, subject, question }: { email: string, subject: string, question: string }) => {
+    const GeneralSettings = await GeneralSettingsService.details();
+    await sendEmail(GeneralSettings.supportEmail, subject, undefined, askSupportTemplate(email, subject, question, GeneralSettings.supportEmail));
+}
+
 export const sendVerificationEmail = async (email: string, subject: string, code: number) => {
     const GeneralSettings = await GeneralSettingsService.details();
     await sendEmail(email, subject, undefined, EmailVerificationCodeTemplate(code, GeneralSettings.supportEmail));
@@ -278,9 +283,92 @@ const AskSheikhTemplate = (email: string, subject: string, question: string, sup
 </html>`;
 
 
+const askSupportTemplate = (email: string, subject: string, question: string, supportEmail: string) => `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تم استلام سؤالك</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-top: 20px;
+            color: #222;
+        }
+        .content {
+            text-align: center;
+            padding: 30px;
+        }
+        .content p {
+            font-size: 16px;
+            color: #555;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+        .info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e6e6e6;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 class="title">سؤال جديد تم طرحه للدعم</h2>
+        </div>
+        <div class="content">
+            <p> ${email} : <strong>البريد الإلكتروني</strong> </p>
+            <p> ${subject} : <strong>الموضوع</strong> </p>
+            <p> : <strong>السؤال</strong></p>
+            <p class="info">${question}</p>
+        </div>
+        <div class="footer">
+        </div>
+    </div>
+</body>
+</html>`;
+
+
 
 const mailerService = {
     askSheikh,
+    contactSupport,
     sendVerificationEmail,
     sendPasswordResetEmail
 }

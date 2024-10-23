@@ -26,7 +26,18 @@ export type AskSheikhPayloadType = {
     question: string,
 }
 
+export type AskSupportPayloadType = {
+    email: string,
+    subject: string,
+    question: string,
+}
+
 export const AskSheikhPayload = Yup.object().shape({
+    email: Yup.string().email("البريد الإلكتروني غير صالح").required('البريد الإلكتروني مطلوب'),
+    subject: Yup.string().required('الموضوع مطلوب'),
+    question: Yup.string().required('السؤال مطلوب'),
+});
+export const AskSupportPayload = Yup.object().shape({
     email: Yup.string().email("البريد الإلكتروني غير صالح").required('البريد الإلكتروني مطلوب'),
     subject: Yup.string().required('الموضوع مطلوب'),
     question: Yup.string().required('السؤال مطلوب'),
