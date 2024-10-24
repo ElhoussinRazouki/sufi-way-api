@@ -8,6 +8,7 @@ const NewsSchema = new Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
+
 NewsSchema.index({ title: 1 });
 
 export const News = model('News', NewsSchema);

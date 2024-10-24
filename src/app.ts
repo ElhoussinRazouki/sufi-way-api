@@ -17,6 +17,7 @@ import { FQRouter } from './routes/fq.route';
 import { GeneralSettingsRouter } from './routes/general.settings.route';
 import { commonRouter } from './routes/common.route';
 import { favoritesRouter } from './routes/favorites.route';
+import { adkarAdiaRouter } from './routes/adkar-adia.route';
 
 
 
@@ -43,6 +44,7 @@ app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 app.use("/authors", authMiddleWareAdmin, authorsRouter);
 app.use("/news", newsRouter);
+app.use("/adkar-adia", adkarAdiaRouter);
 app.use("/todo", todoRouter);
 app.use("/general-settings", authMiddleWareAdmin, GeneralSettingsRouter);
 
