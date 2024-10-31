@@ -1,5 +1,13 @@
 import { Schema, model } from 'mongoose';
 
+const SheikhSchema = new Schema({
+    name: { type: String, required: true },
+    avatar: String,
+    bio: String,
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
+
 const AuthorSchema = new Schema({
     name: { type: String, required: true },
     avatar: String,
@@ -29,3 +37,4 @@ MultiMediaSchema.index({ title: 1 });
 
 export const MultiMedia = model('MultiMedia', MultiMediaSchema);
 export const Author = model('Author', AuthorSchema);
+export const Sheikh = model('Sheikh', SheikhSchema);

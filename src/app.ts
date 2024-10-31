@@ -18,6 +18,7 @@ import { GeneralSettingsRouter } from './routes/general.settings.route';
 import { commonRouter } from './routes/common.route';
 import { favoritesRouter } from './routes/favorites.route';
 import { adkarAdiaRouter } from './routes/adkar-adia.route';
+import { sheikhsRouter } from './routes/sheikhs.route';
 
 
 
@@ -43,6 +44,7 @@ app.use("/frequent-questions", FQRouter);
 app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 app.use("/authors", authMiddleWareAdmin, authorsRouter);
+app.use("/sheikhs", sheikhsRouter);
 app.use("/news", newsRouter);
 app.use("/adkar-adia", adkarAdiaRouter);
 app.use("/todo", todoRouter);
