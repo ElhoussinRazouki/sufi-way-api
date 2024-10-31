@@ -12,7 +12,7 @@ async function list(filters: { page?: string, limit?: string, title?: string, ty
         conditions['title'] = { $regex: filters.title, $options: 'i' };
     }
     if (filters.type) {
-        conditions['type'] = { $regex: filters.title, $options: 'i' };
+        conditions['type'] = filters.type;
     }
     const sort: { created_at?: "asc" | "desc" } = {}
     if (filters.sort) {
