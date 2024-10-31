@@ -2,17 +2,17 @@ import * as Yup from "yup";
 
 
 // for getting list
-export const AuthorDtoSchema = Yup.object().shape({
+export const ZawyaDtoSchema = Yup.object().shape({
     name: Yup.string().required(),
     avatar: Yup.string().optional(),
     bio: Yup.string().optional()
 }); 
 
 // for creating new one
-export const AuthorDtoCreatePayload = AuthorDtoSchema;
+export const ZawyaDtoCreatePayload = ZawyaDtoSchema;
 
-// for updating multimedia
-export const AuthorDtoPatchPayload = Yup.object().shape({
+// for updating
+export const ZawyaDtoPatchPayload = Yup.object().shape({
     id: Yup.string().required(),
     name: Yup.string().optional(),
     avatar: Yup.string().optional(),

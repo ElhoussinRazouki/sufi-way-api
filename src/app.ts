@@ -19,6 +19,7 @@ import { commonRouter } from './routes/common.route';
 import { favoritesRouter } from './routes/favorites.route';
 import { adkarAdiaRouter } from './routes/adkar-adia.route';
 import { sheikhsRouter } from './routes/sheikhs.route';
+import { zawyaRouter } from './routes/zawya.route';
 
 
 
@@ -45,6 +46,7 @@ app.use("/attachment", attachmentRouter);
 app.use("/multimedia", multimediaRouter);
 app.use("/authors", authMiddleWareAdmin, authorsRouter);
 app.use("/sheikhs", sheikhsRouter);
+app.use("/zawya", zawyaRouter);
 app.use("/news", newsRouter);
 app.use("/adkar-adia", adkarAdiaRouter);
 app.use("/todo", todoRouter);
