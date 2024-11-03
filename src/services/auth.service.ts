@@ -181,9 +181,11 @@ export const logout = async (accessToken: string, refreshToken: string) => {
 export const googleAuth = async (profile: any, ipAddress?: string, userAgent?: string) => {
     let userDb = await Users.findOne({ email: profile.emails[0].value }).select('googleId email userName avatar plan');
     let message = undefined;
+    const userName = (profile.displayName as string)?.split(' ').join('_').toLowerCase()+"_"+Math.random()*100;
+
     if (!userDb) {
         userDb = await Users.create({
-            userName: profile.displayName,
+            userName: userName,
             email: profile.emails[0].value,
             ipRegisteredWith: ipAddress,
             isVerified: profile.emails[0].verified,
