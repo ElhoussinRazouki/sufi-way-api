@@ -1,30 +1,41 @@
-import * as Minio from 'minio'
+import { S3Client, HeadBucketCommand, CreateBucketCommand } from "@aws-sdk/client-s3";
 import { environment } from '../utils/loadEnvironment';
-import { logs } from '../utils';
 
 
 
 const BUCKET_NAME = 'sufi-tariqa'
 
-export const minioClient = new Minio.Client({
-    endPoint: environment.MINIO_ENDPOINT,
-    useSSL: true,
-    accessKey: environment.MINIO_ACCESS_KEY,
-    secretKey: environment.MINIO_SECRET_KEY,
+export const s3Client = new S3Client({
+    endpoint: environment.MINIO_ENDPOINT,
+    region: "us-east-1",
+    credentials: {
+        accessKeyId: environment.MINIO_ACCESS_KEY,
+        secretAccessKey: environment.MINIO_SECRET_KEY,
+    },
+    forcePathStyle: true,
+    tls: true
 })
 
-// check if the bucket exists, if not create it
-minioClient.bucketExists(BUCKET_NAME).then((exists) => {
-    if(exists){
-        logs.log('Connected Successfully to Cloud Bucket');
-    }else{
-        logs.log('Bucket does not exist. Creating it now...')
-        minioClient.makeBucket(BUCKET_NAME, 'us-east-1').then(() => {
-            logs.log('Bucket created successfully.')
-        }).catch((error) => {
-            logs.log('Error occurred. creating bucket', error)
-        })
+async function ensureBucketExists() {
+    try {
+      // Check if bucket exists
+      const headBucketCommand = new HeadBucketCommand({ Bucket: BUCKET_NAME });
+      await s3Client.send(headBucketCommand);
+      console.log("Connected Successfully to Cloud Bucket");
+    } catch (error) {
+      if (error instanceof Error && (error.name === "NotFound" || error.name === "NoSuchBucket")) {
+        console.log("Bucket does not exist. Creating it now...");
+        try {
+          const createBucketCommand = new CreateBucketCommand({ Bucket: BUCKET_NAME });
+          await s3Client.send(createBucketCommand);
+          console.log("Bucket created successfully.");
+        } catch (createError) {
+          console.error("Error occurred while creating bucket:", createError);
+        }
+      } else {
+        console.error("Error occurred while checking bucket existence:", error);
+      }
     }
-}).catch((error) => {
-    logs.error('Error occurred. checking if the bucket exist ', error)
-})
+  }
+  
+  ensureBucketExists();

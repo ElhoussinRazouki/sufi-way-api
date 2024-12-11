@@ -20,6 +20,7 @@ import { favoritesRouter } from './routes/favorites.route';
 import { adkarAdiaRouter } from './routes/adkar-adia.route';
 import { sheikhsRouter } from './routes/sheikhs.route';
 import { zawyaRouter } from './routes/zawya.route';
+import { scheduleBucketCleaner } from './services/scheduler.service';
 
 
 
@@ -61,5 +62,6 @@ mongoose.connect(environment.MONGODB_URI as string).then((value)=>{
     console.log('🎉 connection established successfully with mongo db');
     app.listen(environment.PORT, () => {
         console.log(`🚀 Server is running on port: ${environment.PORT}`);
+        scheduleBucketCleaner();
     });
 })

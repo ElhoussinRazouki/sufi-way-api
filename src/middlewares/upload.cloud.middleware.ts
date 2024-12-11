@@ -2,8 +2,9 @@ import util from "util";
 import multer, { FileFilterCallback } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import { Request, Response, NextFunction } from "express";
-import { minioClient } from "../config/cloud.storage.config";
 import { environment } from "../utils/loadEnvironment";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "../config/cloud.storage.config";
 
 // Define allowed file types
 type FileType = "image" | "video" | "audio" | "pdf";
@@ -72,14 +73,14 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
                 return res.status(400).send({ message: "Invalid file type." });
             }
 
-            // Upload to MinIO
-            minioClient.putObject(
-                environment.MINIO_BUCKET_NAME,
-                `/attachments/${folder}/${uniqueName}`, 
-                file.buffer, 
-                file.size, 
-                { 'Content-Type': file.mimetype },
-            ).then(() => {
+            const command = new PutObjectCommand({
+                Bucket: environment.MINIO_BUCKET_NAME,
+                Key: `/attachments/${folder}/${uniqueName}`,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            });
+
+            s3Client.send(command).then(() => {
                 return res.status(200).send({
                 data: {
                     url: `${environment.MINIO_HOST}/${environment.MINIO_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
