@@ -58,7 +58,7 @@ async function deleteFiles(bucket: string, keys: string[]) {
     }
 }
 async function getAllBucketFiles() {
-    const list = await listFilesInFolder(environment.MINIO_BUCKET_NAME, "attachments/");
+    const list = await listFilesInFolder(environment.S3_BUCKET_NAME, "attachments/");
     return list;
 }
 
@@ -80,7 +80,7 @@ async function getAllDataBaseUsedFiles() {
     const AllDatabaseFiles = [...multimediaFilesList, ...AuthorsFilesList, ...ZawyaFilesList, ...NewsFilesList] as string[];
 
     // extract only the actual path in the bucket
-    const AllDatabaseFilesPaths = AllDatabaseFiles.map((url) => url.split(environment.MINIO_BUCKET_NAME + "/")[1]);
+    const AllDatabaseFilesPaths = AllDatabaseFiles.map((url) => url.split(environment.S3_BUCKET_NAME + "/")[1]);
     return AllDatabaseFilesPaths;
 }
 
@@ -99,7 +99,7 @@ async function cleanBucket() {
     // delete the files
     // check the length of the files to delete to avoid unnecessary calls to the delete function
     if (filesToDelete.length > 0){
-        await deleteFiles(environment.MINIO_BUCKET_NAME, filesToDelete);
+        await deleteFiles(environment.S3_BUCKET_NAME, filesToDelete);
     }else{
         console.log("no files to delete");
     }

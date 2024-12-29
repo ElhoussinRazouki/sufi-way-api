@@ -74,7 +74,7 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
             }
 
             const command = new PutObjectCommand({
-                Bucket: environment.MINIO_BUCKET_NAME,
+                Bucket: environment.S3_BUCKET_NAME,
                 Key: `/attachments/${folder}/${uniqueName}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
@@ -83,7 +83,7 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
             s3Client.send(command).then(() => {
                 return res.status(200).send({
                 data: {
-                    url: `${environment.MINIO_HOST}/${environment.MINIO_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
+                    url: `${environment.S3_HOST}/${environment.S3_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
                     name: uniqueName,
                     type: file.mimetype,
                     size: file.size

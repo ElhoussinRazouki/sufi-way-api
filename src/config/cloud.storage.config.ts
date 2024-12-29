@@ -6,11 +6,11 @@ import { environment } from '../utils/loadEnvironment';
 const BUCKET_NAME = 'sufi-tariqa'
 
 export const s3Client = new S3Client({
-    endpoint: environment.MINIO_ENDPOINT,
+    endpoint: environment.S3_ENDPOINT,
     region: "us-east-1",
     credentials: {
-        accessKeyId: environment.MINIO_ACCESS_KEY,
-        secretAccessKey: environment.MINIO_SECRET_KEY,
+        accessKeyId: environment.S3_ACCESS_KEY,
+        secretAccessKey: environment.S3_SECRET_KEY,
     },
     forcePathStyle: true,
     tls: true
