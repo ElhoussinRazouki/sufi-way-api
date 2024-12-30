@@ -6,3 +6,4 @@ package-lock.json
 uploads
 dist
 attachments
+.env.dev

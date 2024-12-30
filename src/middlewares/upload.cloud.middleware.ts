@@ -83,7 +83,7 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
             s3Client.send(command).then(() => {
                 return res.status(200).send({
                 data: {
-                    url: `${environment.S3_HOST}/${environment.S3_BUCKET_NAME}/attachments/${folder}/${uniqueName}`,
+                    url: `${environment.S3_HOST}/${environment.S3_BUCKET_NAME}/attachments/${folder}/${uniqueName}?wrap=0`,
                     name: uniqueName,
                     type: file.mimetype,
                     size: file.size
