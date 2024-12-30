@@ -80,7 +80,7 @@ async function getAllDataBaseUsedFiles() {
     const AllDatabaseFiles = [...multimediaFilesList, ...AuthorsFilesList, ...ZawyaFilesList, ...NewsFilesList] as string[];
 
     // extract only the actual path in the bucket
-    const AllDatabaseFilesPaths = AllDatabaseFiles.map((url) => url.split(environment.S3_BUCKET_NAME + "/")[1]);
+    const AllDatabaseFilesPaths = AllDatabaseFiles.map((url) => url.split('?')[0]?.split(environment.S3_BUCKET_NAME + "/")[1]);
     return AllDatabaseFilesPaths;
 }
 
