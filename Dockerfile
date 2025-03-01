@@ -1,25 +1,28 @@
-# Use Node.js 22 as base image (latest LTS version)
-FROM node:22-alpine
+# Use Node.js 18 as base image (more stable for TypeScript builds)
+FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install yarn if it's not included in the image
-RUN apk add --no-cache yarn
-
-# Copy package.json and yarn.lock
-COPY package.json yarn.lock* ./
+# Copy package files first (for better caching)
+COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN yarn install
+RUN npm ci
 
-# Copy the rest of the application
-COPY . .
+# Copy TypeScript configuration files
+COPY tsconfig.json tsconfig.build.json ./
+
+# Copy source code
+COPY src/ ./src/
 
 # Build TypeScript application
-RUN yarn build
+RUN npm run build
+
+# If you need to clean up dev dependencies (optional)
+# RUN npm prune --production
 
 EXPOSE 3001
 
 # Command to run the application
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
