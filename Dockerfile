@@ -1,5 +1,5 @@
-# Use Node.js 20 as base image (latest LTS version)
-FROM node:20-alpine
+# Use Node.js 22 as base image (latest LTS version)
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN apk add --no-cache yarn
 COPY package.json yarn.lock* ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Copy the rest of the application
 COPY . .
