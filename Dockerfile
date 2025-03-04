@@ -11,12 +11,9 @@ COPY package.json yarn.lock* ./
 
 # Copy TypeScript configuration files
 # Install dependenciesn ./
-RUN yarn install --frozen-lockfile
+RUN yarn install
 # Copy source code
-# Copy TypeScript configuration files
-COPY tsconfig.json tsconfig.build.json ./
-# Build TypeScript application
-# Copy source code
+
 COPY src/ ./src/
 # If you need to clean up dev dependencies (optional)
 # Build TypeScript application

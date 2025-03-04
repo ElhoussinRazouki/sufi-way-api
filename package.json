@@ -4,7 +4,7 @@
   "description": "user api",
   "main": "/src/app.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc",
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
     "deploy": "npm run build && npm run start"
