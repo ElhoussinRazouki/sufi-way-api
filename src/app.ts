@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 app.use(cors());
 
 app.use(express.json());
-app.use(passport.initialize());
+app.use(passport.initialize() as any);
 app.use("/auth", authRouter);
 app.use('/attachments', express.static(path.join(__dirname, '../attachments')));
 app.use(authMiddleWare);

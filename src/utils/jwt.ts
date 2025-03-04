@@ -6,7 +6,7 @@ import { environment } from './loadEnvironment'
 export const _generateToken = async (payload: any, lifeTime: string) => {
   return jwt.sign(payload, environment.JWT_SECRET, {
     expiresIn: lifeTime,
-  })
+  } as any)
 }
 
 export const _refreshToken = async (accessToken: string, lifeTime: string): Promise<string> => {
@@ -23,7 +23,7 @@ export const _refreshToken = async (accessToken: string, lifeTime: string): Prom
 
     // Convert string secret to Buffer
     const secret = Buffer.from(environment.JWT_SECRET, 'utf-8')
-    return jwt.sign(payload, secret, { expiresIn: lifeTime });
+    return jwt.sign(payload, secret, { expiresIn: lifeTime as any });
   } catch (error: any) {
     throw new Error('invalid token refresh ' + error.message)
   }

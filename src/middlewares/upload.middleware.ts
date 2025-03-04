@@ -73,14 +73,14 @@ const uploadFileMiddleware = (allowedFileType: FileType, maxSize: number = 2 * 1
                 cb(new Error(`Invalid file type. Only ${allowedFileType} files are allowed.`));
             }
         },
-    }).single("file");
+    }  as any).single("file");
 
     // Promisify the middleware
     let uploadMiddleware = util.promisify(uploadFile);
 
     return async (req: Request, res: Response, next?: NextFunction) => {
         try {
-            await uploadMiddleware(req, res);
+            await uploadMiddleware(req  as any, res  as any);
             if (!req.file) {
                 return res.status(400).send({ message: "Please upload a file!" });
             }
