@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { environment } from '../utils/loadEnvironment';
+import brevo from '@getbrevo/brevo';
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -10,4 +11,13 @@ export const transporter = nodemailer.createTransport({
         user: environment.EMAIL_USER,
         pass: environment.EMAIL_PASSWORD
     },
+});
+
+
+transporter.verify(function (error, success) {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log('Server is ready to take our messages');
+    }
 });

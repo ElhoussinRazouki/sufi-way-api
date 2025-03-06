@@ -20,6 +20,7 @@ export const environment: {
   S3_ACCESS_KEY: string,
   S3_SECRET_KEY: string,
   S3_BUCKET_NAME: string,
+  BREVO_API_KEY: string,
 } = {
   PORT: process.env.PORT as string,
   EMAIL_USER: process.env.EMAIL_USER as string,
@@ -38,4 +39,5 @@ export const environment: {
   S3_ACCESS_KEY: process.env.S3_ACCESS_KEY as string,
   S3_SECRET_KEY: process.env.S3_SECRET_KEY as string,
   S3_BUCKET_NAME: process.env.S3_BUCKET_NAME as string,
+  BREVO_API_KEY: process.env.BREVO_API_KEY as string,
 };
