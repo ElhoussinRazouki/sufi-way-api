@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer';
 import { environment } from '../utils/loadEnvironment';
-import brevo from '@getbrevo/brevo';
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',

@@ -45,7 +45,7 @@ export async function deleteUserNote(userId: string, noteId: string) {
     }
 }
 
-export async function updateUserNote(userId: string, noteId: string, payload: { title?: string, description?: string }) {
+export async function updateUserNote(userId: string, noteId: string, payload: { title?: string, description?: string, content?: string }) {
     await NoteDtoPatchPayload.validate({ ...payload, userId, noteId });
 
     // check payload length
@@ -56,6 +56,7 @@ export async function updateUserNote(userId: string, noteId: string, payload: { 
     const patch: any = { "notes.$.updated_at": new Date() };
     if (payload.title) patch["notes.$.title"] = payload.title;
     if (payload.description) patch["notes.$.description"] = payload.description;
+    if (payload.content) patch["notes.$.content"] = payload.content;
 
     try {
         const result = await Users.updateOne({ _id: userId, "notes._id": noteId }, { $set: patch });
